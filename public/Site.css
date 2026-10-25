@@ -40,3 +40,6 @@ main :is(p,label,input,select,textarea,summary,th,td,h1,h2,h3,dt,dd,li,.muted,.c
 .button,.button.small{font-weight:700;color:#000}.button.primary{color:#fff}.nav,.nav.active,.brand{font-weight:700}.chart .main-svg text{fill:#000!important;font-weight:700!important}.metric:first-child{background:#fff;color:#000;border-color:var(--line)}.metric:first-child :is(.label,.value,.unit){color:#000;font-weight:700}.energy-hero :is(h1,h1 span,p,.eyebrow){color:#fff;font-weight:700}.energy-hero .button{color:#fff}.field-grid input{color:#000}.remove-row{color:#000}.notice .text-button{color:#000}.chart-foot{color:#000}
 
 #tuningStatus,.tab,.tab.active,.research-pill,.breadcrumb span,main a,footer>span:first-child{color:#000;font-weight:700}.button:disabled{opacity:.65}
+
+/* Readable data-entry and laboratory tables at every viewport width. */
+main input,main select,main textarea{font-size:16px;line-height:1.5;color:#000;font-weight:700}main th,main td{font-size:15px}main label,.composition-header,.stage-heading{font-size:15px}#experimentEditor input{min-width:120px}#experimentEditor select{min-width:130px}

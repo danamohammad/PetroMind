@@ -9,7 +9,7 @@ from thermo import ChemicalConstantsPackage, PropertyCorrelationsPackage, CEOSGa
 PSI = 6894.757293168
 SCF = 35.3146667215
 STB = 6.2898107704
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 
 # Preserve the requested V-L EOS branches. Thermo's default PIP post-sort can
 # relabel a dense vapor branch as a second liquid without changing equilibrium.
@@ -70,7 +70,17 @@ def build(req):
     gas=PetroleumGas(models[model],eos_kwargs=kw,HeatCapacityGases=cps)
     liquid=PetroleumLiquid(models[model],eos_kwargs=kw,HeatCapacityGases=cps)
     flasher=FlashVL(const,props,gas=gas,liquid=liquid)
+    flasher.volume_shifts=[finite(c.get('volumeShift',0),c['id']+' volume shift (m³/mol)',-.0005,.0005) for c in data]
+    flasher.volume_shift_slopes=[finite(c.get('volumeShiftT',0),c['id']+' volume-shift slope (m³/mol/K)',-5e-6,5e-6) for c in data]
+    flasher.component_data=data
     return flasher,z,names,data
+
+def translated_volume(f,phase):
+    # Component-linear translation, optionally linear in T about 298.15 K. VLE compositions and
+    # pressures are unchanged; both phases use the same component shifts.
+    v=float(phase.V())-sum(x*c for x,c in zip(phase.zs,[c+ct*(phase.T-298.15) for c,ct in zip(f.volume_shifts,f.volume_shift_slopes)]))
+    if v<=0 or not math.isfinite(v):raise ValueError('Volume translation produced nonpositive volume.')
+    return v
 
 def conditions(req):
     c=dict(req['conditions'])
@@ -103,9 +113,14 @@ def flash(f,z,t,p):
         if fugacity>1e-5: raise ValueError(f'Phase fugacities did not converge ({fugacity:.3g}).')
     def phase(s):
         if s is None:return None
-        vm=float(s.V()); mw=float(s.MW())
+        vm=translated_volume(f,s); mw=float(s.MW())
         if vm<=0 or not math.isfinite(vm):raise ValueError('Invalid molar volume.')
-        return dict(z=list(s.zs),Z=float(s.Z()),density=mw/(1000*vm),MW=mw,volume=vm)
+        out=dict(z=list(s.zs),Z=p*PSI*vm/(8.31446261815324*(t+273.15)),density=mw/(1000*vm),MW=mw,volume=vm)
+        if all(c.get('viscosityVc') for c in f.component_data):
+            from chemicals.viscosity import Lorentz_Bray_Clarke
+            d=f.component_data
+            out['viscosity']=1000*Lorentz_Bray_Clarke(t+273.15,p*PSI,vm,list(s.zs),[c['MW'] for c in d],[c['Tc'] for c in d],[c['Pc'] for c in d],[finite(c['viscosityVc'],'Viscosity critical volume',1e-6,.02) for c in d])
+        return out
     return dict(phase='Liquid + vapor' if 1e-8<beta<1-1e-8 else 'Vapor' if beta>=1-1e-8 else 'Liquid',vaporFraction=beta,liquid=phase(liq),gas=phase(gas),balance=balance,fugacityResidual=fugacity)
 
 def surface(f,z,state,t,p,c):
@@ -233,7 +248,7 @@ def envelope(req):
         if err>1e-6 or abs(sw-1)>1e-7:raise ValueError('Equilibrium tolerance exceeded.')
         bubble=k[light]>=0;x=a.zs if bubble else b.zs;y=b.zs if bubble else a.zs
         return dict(temperature=float(T-273.15),pressure=float(P/PSI),branch='bubble' if bubble else 'dew',
-                    fugacityResidual=err,compositionResidual=abs(sw-1),liquidVolume=a.V() if bubble else b.V(),gasVolume=b.V() if bubble else a.V(),
+                    fugacityResidual=err,compositionResidual=abs(sw-1),liquidVolume=translated_volume(f,a) if bubble else translated_volume(f,b),gasVolume=translated_volume(f,b) if bubble else translated_volume(f,a),
                     liquidComposition=list(x),gasComposition=list(y))
     # Start at an ordinary noncritical bubble point, then trace both directions.
     f.dew_T_flash_algos=f.dew_T_flash_algos[:2];f.bubble_T_flash_algos=f.bubble_T_flash_algos[:2]
@@ -347,6 +362,8 @@ def tune(req):
     """Bounded weighted least-squares calibration. Never mutates the input model."""
     import copy
     from scipy.optimize import least_squares
+    req=copy.deepcopy(req)
+    req['experiments']=[dict(ex,observations=[o for o in ex.get('observations',[]) if o.get('role','training')=='training']) for ex in req.get('experiments',[]) if ex.get('fitEnabled',True)]
     build(req);conditions(req)
     specs=req.get('tuningParameters',[])
     if not 1<=len(specs)<=6:raise ValueError('Select between one and six tuning parameters.')
@@ -361,9 +378,9 @@ def tune(req):
             name='|'.join(sorted(pair));key=(kind,name)
             initial=float(req.get('interactions',{}).get(name,req.get('interactions',{}).get('|'.join(reversed(name.split('|'))),0)))
             allowed=(-.5,.5)
-        elif kind in ('Tc','Pc','omega'):
+        elif kind in ('Tc','Pc','omega','volumeShift','volumeShiftT','viscosityVc'):
             if name not in present or not cats[name].get('pseudo'):raise ValueError('Critical-property tuning is limited to active pseudocomponents.')
-            initial=float(cats[name][kind]);allowed={'Tc':(50,2000),'Pc':(1000,1e9),'omega':(-.5,3)}[kind]
+            initial=float(cats[name].get(kind,0));allowed={'Tc':(50,2000),'Pc':(1000,1e9),'omega':(-.5,3),'volumeShift':(-.0005,.0005),'volumeShiftT':(-5e-6,5e-6),'viscosityVc':(1e-6,.02)}[kind]
         else:raise ValueError('Unsupported tuning parameter.')
         if key in keys:raise ValueError('Duplicate tuning parameter.')
         low=finite(s.get('lower'),name+' lower bound',*allowed);high=finite(s.get('upper'),name+' upper bound',*allowed)
@@ -375,7 +392,7 @@ def tune(req):
     if any(r['predicted'] is None for r in observations):raise ValueError('The initial model cannot predict every selected measurement. Remove inapplicable measurements or correct the starting model.')
     # Each property receives equal total weight. Zero measurements use an explicit
     # scale floor; they are not dropped or divided by zero.
-    floors={'Bo':.01,'Rs':1.,'Bg':1e-5,'density':1.,'bubble':1.,'relativeVolume':.01}
+    floors={'Bo':.01,'Rs':1.,'Bg':1e-5,'density':1.,'bubble':1.,'relativeVolume':.01,'compressibility':1e-7,'liquidVolumeFraction':.01,'liquidRelativeVolume':.01,'gasVolumeFactor':.001,'gasZ':.01,'gasGravity':.01,'stageGOR':1.,'stockDensity':1.,'viscosity':.01,'gasViscosity':.001}
     counts={p:sum(r['property']==p for r in observations) for p in floors}
     weights=req.get('tuningWeights',{})
     scales=np.array([max(abs(r['measured']),floors[r['property']])*math.sqrt(counts[r['property']])/math.sqrt(finite(weights.get(r['property'],1),'Property weight',.01,100)) for r in observations])
@@ -430,9 +447,9 @@ def tune(req):
 
 
 def comparison(req):
-    f,z,names,data=build(req);c=conditions(req);rows=req['lab'];out=[]
-    if not 1<=len(rows)<=250:raise ValueError('Use 1 to 250 laboratory rows.')
-    keys={'Bo':'Bo','Rs':'Rs','Bg':'Bg','density':'liquidDensity','bubble':'bubble','relativeVolume':'relativeVolume'}
+    f,z,names,data=build(req);c=conditions(req);rows=req.get('lab',[]);out=[]
+    if not 0<=len(rows)<=250:raise ValueError('Use 1 to 250 laboratory rows.')
+    keys={'Bo':'Bo','Rs':'Rs','Bg':'Bg','density':'liquidDensity','bubble':'bubble','relativeVolume':'relativeVolume','compressibility':'compressibility','liquidVolumeFraction':'liquidVolumeFraction','liquidRelativeVolume':'liquidRelativeVolume'}
     saturation_cache={}
     for i,r in enumerate(rows):
         p=finite(r.get('pressure'),f'Lab row {i+1} pressure',.1,30000)
@@ -443,27 +460,40 @@ def comparison(req):
             a=flash(f,z,t,p)
             if any(k in needed for k in ('Bo','Rs','Bg')):predictions.update(surface(f,z,a,t,p,c))
             predictions['density']=a['liquid']['density'] if a['liquid'] else None
-        if any(k in needed for k in ('bubble','relativeVolume')):
+        if any(k in needed for k in ('bubble','relativeVolume','liquidRelativeVolume')):
             if t not in saturation_cache:saturation_cache[t]=saturation(f,z,t,0)['pressure']
             pb=saturation_cache[t];predictions['bubble']=pb
-            if 'relativeVolume' in needed:
+            if any(k in needed for k in ('relativeVolume','liquidRelativeVolume')):
                 predictions['relativeVolume']=None
                 if pb is not None:
-                    reference=f.liquid.to(T=t+273.15,P=pb*PSI,zs=z).V()
+                    reference=translated_volume(f,f.liquid.to(T=t+273.15,P=pb*PSI,zs=z))
                     volume=sum(a['vaporFraction']*a['gas']['volume'] if phase=='gas' else (1-a['vaporFraction'])*a['liquid']['volume'] for phase in ('gas','liquid') if a[phase])
                     predictions['relativeVolume']=volume/reference
+                    predictions['liquidRelativeVolume']=(1-a['vaporFraction'])*a['liquid']['volume']/reference if a['liquid'] else 0
+        if 'liquidVolumeFraction' in needed:
+            vl=(1-a['vaporFraction'])*a['liquid']['volume'] if a['liquid'] else 0
+            vg=a['vaporFraction']*a['gas']['volume'] if a['gas'] else 0
+            predictions['liquidVolumeFraction']=vl/(vl+vg)
+        if 'compressibility' in needed:
+            predictions['compressibility']=None
+            dp=max(.01,p*.001);aa=flash(f,z,t,p-dp);bb=flash(f,z,t,p+dp)
+            if aa['phase']==bb['phase']=='Liquid':predictions['compressibility']=-(math.log(bb['liquid']['volume'])-math.log(aa['liquid']['volume']))/(2*dp)
         for prop in keys:
             if r.get(prop) is None or r.get(prop)=='':continue
             measured=finite(r[prop],f'Lab row {i+1} {prop}',0,None);pred=predictions.get(prop)
             out.append(dict(row=i+1,pressure=p,temperature=t,property=prop,measured=measured,predicted=pred,error=None if pred is None else pred-measured,relativeError=None if pred is None or measured==0 else 100*(pred-measured)/measured))
-    if not out:raise ValueError('No supported measured properties. Use Bo, Rs, Bg, density, bubble or relativeVolume columns.')
+    if req.get('experiments'):out.extend(experiment_comparison(req,f,z)['rows'])
+    if not out:raise ValueError('No supported measured properties or experiment observations.')
+    return dict(rows=out,metrics=error_metrics(out))
+
+def error_metrics(out):
     metrics=[]
-    for prop in keys:
+    for prop in dict.fromkeys(r['property'] for r in out):
         rr=[x for x in out if x['property']==prop and x['error'] is not None]
         if rr:
             rel=[abs(x['relativeError']) for x in rr if x['relativeError'] is not None]
-            metrics.append(dict(property=prop,count=len(rr),RMSE=math.sqrt(sum(x['error']**2 for x in rr)/len(rr)),MAE=sum(abs(x['error']) for x in rr)/len(rr),AARD=sum(rel)/len(rel) if rel else None))
-    return dict(rows=out,metrics=metrics)
+            metrics.append(dict(property=prop,count=len(rr),RMSE=math.sqrt(sum(x['error']**2 for x in rr)/len(rr)),MAE=sum(abs(x['error']) for x in rr)/len(rr),AARD=sum(rel)/len(rel) if rel else None,maxRelativeError=max(rel) if rel else None))
+    return metrics
 
 def read_file(req):
     raw=base64.b64decode(req['data'],validate=True)
@@ -494,6 +524,99 @@ def read_file(req):
 
 def dispatch_json(text):
     req=json.loads(text); task=req.get('task')
-    fun={'calculate':calculate,'envelope':envelope,'compare':comparison,'tune':tune,'import':read_file}.get(task)
+    fun={'calculate':calculate,'envelope':envelope,'compare':comparison,'tune':tune,'import':read_file,'experiments':experiment_comparison}.get(task)
     if fun is None:raise ValueError('Unknown calculation request.')
     return json.dumps(clean(fun(req)),allow_nan=False)
+
+
+def simulate_experiment(f,z,ex):
+    """Sequential gas removal with a common residual-oil reference.
+
+    DL keeps temperature fixed. Separator stages may change temperature.
+    All requested stages are simulated even when an observation is held out.
+    Standard gas volume is ideal at the experiment's stated reference T/P.
+    """
+    kind=ex.get('type')
+    if kind not in ('differential','separator','viscosity'):raise ValueError('Experiment type must be differential, separator or viscosity.')
+    stages=ex.get('stages',[])
+    if not 1<=len(stages)<=80:raise ValueError('Use 1 to 80 ordered experiment stages.')
+    rt=finite(ex.get('referenceTemperature',15.56),'Reference temperature',-100,200)
+    rp=finite(ex.get('referencePressure',14.696),'Reference pressure',.1,100)
+    vstd=8.31446261815324*(rt+273.15)/(rp*PSI)
+    oil_n=1.;oil_z=list(z);removed=np.zeros(len(z));rows=[];gas_volumes=[];prior=None
+    for i,step in enumerate(stages):
+        p=finite(step.get('pressure'),'Stage pressure',.1,30000)
+        t=finite(step.get('temperature',ex.get('temperature')),'Stage temperature',-200,600)
+        if kind in ('differential','viscosity'):
+            if prior is not None and p>=prior:raise ValueError('Depletion pressures must be strictly decreasing.')
+            if abs(t-float(ex['temperature']))>1e-9:raise ValueError('Differential depletion must be isothermal.')
+        prior=p
+        state=flash(f,oil_z,t,p);ng=oil_n*state['vaporFraction'];nl=oil_n-ng
+        if nl<=1e-10 or not state['liquid']:raise ValueError('No liquid remains at an experiment stage.')
+        gas=state['gas'];liq=state['liquid'];gv=ng*vstd
+        if gas:removed+=ng*np.array(gas['z'])
+        balance=float(max(abs(np.array(z)-removed-nl*np.array(liq['z']))))
+        if balance>1e-7:raise ValueError('Experiment component balance failed.')
+        row=dict(stage=i,pressure=p,temperature=t,liquidMoles=nl,removedGasMoles=ng,liquidVolume=nl*liq['volume'],density=liq['density'],viscosity=liq.get('viscosity'),balance=balance,fugacityResidual=state['fugacityResidual'],liquidComposition=liq['z'],gasComposition=gas['z'] if ng>1e-10 and gas else None)
+        if ng>1e-10 and gas:
+            row.update(gasVolumeFactor=gas['volume']/vstd,gasZ=gas['Z'],gasGravity=gas['MW']/28.96546,gasViscosity=gas.get('viscosity'))
+        rows.append(row);gas_volumes.append(gv);oil_n=nl;oil_z=liq['z']
+    # Cooling the residual oil is a closed final reference step. Condensation or
+    # vaporization here must not silently become an unreported depletion stage.
+    residual=flash(f,oil_z,rt,float(ex.get('residualPressure',rp)))
+    if residual['vaporFraction']>1e-6 or not residual['liquid']:raise ValueError('Residual oil is not single-phase at reference conditions.')
+    stock=oil_n*residual['liquid']['volume']
+    for i,row in enumerate(rows):
+        row.update(Bo=row['liquidVolume']/stock,Rs=sum(gas_volumes[i+1:])*SCF/(stock*STB),stageGOR=gas_volumes[i]*SCF/(stock*STB),stockDensity=residual['liquid']['density'])
+    feed=ex.get('feed')
+    if feed:
+        t=finite(feed.get('temperature'),'Feed temperature',-200,600);p=finite(feed.get('pressure'),'Feed pressure',.1,30000)
+        liquid=f.liquid.to(T=t+273.15,P=p*PSI,zs=z)
+        rows.insert(0,dict(stage=-1,pressure=p,temperature=t,Bo=translated_volume(f,liquid)/stock,Rs=sum(gas_volumes)*SCF/(stock*STB),stockDensity=residual['liquid']['density'],density=sum(x*d['MW'] for x,d in zip(z,f.component_data))/1000/translated_volume(f,liquid),balance=0))
+    return dict(id=str(ex.get('id','Experiment')),type=kind,rows=rows,stockDensity=residual['liquid']['density'],balance=rows[-1]['balance'],referenceTemperature=rt,referencePressure=rp,gasBasis='Ideal standard gas; gasVolumeFactor in ft³/scf; Bo in bbl/STB; Rs and stageGOR in scf/STB; viscosities in cP; density in kg/m³.')
+
+
+def experiment_comparison(req,f=None,z=None):
+    if f is None:f,z,*_=build(req)
+    exs=req.get('experiments',[])
+    if not 1<=len(exs)<=12:raise ValueError('Use 1 to 12 experiments.')
+    ids=[str(e.get('id','')) for e in exs]
+    if len(ids)!=len(set(ids)) or any(not i for i in ids):raise ValueError('Experiment IDs must be distinct and nonempty.')
+    allowed=('Bo','Rs','density','gasVolumeFactor','gasZ','gasGravity','stageGOR','stockDensity','viscosity','gasViscosity')
+    outputs=[];out=[]
+    for ex in exs:
+        sim=simulate_experiment(f,z,ex);outputs.append(sim);lookup={r['stage']:r for r in sim['rows']}
+        obs=ex.get('observations',[])
+        if len(obs)>500:raise ValueError('Too many experiment observations.')
+        for o in obs:
+            if o.get('stage') not in lookup:raise ValueError('Observation refers to a missing stage.')
+            r=lookup[o['stage']]
+            for prop in allowed:
+                if o.get(prop) in (None,''):continue
+                measured=finite(o[prop],prop,0,None);pred=r.get(prop)
+                out.append(dict(experiment=sim['id'],type=sim['type'],role=o.get('role','training'),row=o['stage']+1,stage=o['stage'],pressure=r['pressure'],temperature=r['temperature'],property=prop,measured=measured,predicted=pred,error=None if pred is None else pred-measured,relativeError=None if pred is None or measured==0 else 100*(pred-measured)/measured))
+    curves,checks=reference_curves(exs)
+    return dict(experiments=outputs,rows=out,metrics=error_metrics(out),referenceCurves=curves,referenceChecks=checks,referenceMetrics=error_metrics(checks))
+
+
+def reference_curves(exs):
+    """Shape-preserving measured-data interpolation, separate from EOS prediction.
+    No extrapolation or temperature mixing. Validation/derived data never enter it.
+    """
+    from scipy.interpolate import PchipInterpolator
+    curves=[];checks=[]
+    for ex in exs:
+        if ex.get('type') not in ('differential','viscosity'):continue
+        stages=ex['stages'];obs=ex.get('observations',[])
+        for prop in ('Bo','Rs','density','viscosity'):
+            train=[o for o in obs if o.get('role','training')=='training' and o.get(prop) is not None and 0<=o['stage']<len(stages)]
+            points=sorted((float(stages[o['stage']]['pressure']),float(o[prop])) for o in train)
+            if len(points)<3 or len({p for p,v in points})!=len(points):continue
+            x,y=zip(*points);curve=PchipInterpolator(x,y,extrapolate=False)
+            ps=np.linspace(x[0],x[-1],81)
+            curves.append(dict(experiment=ex['id'],property=prop,rows=[dict(pressure=float(p),value=float(curve(p))) for p in ps],note='Measured-data PCHIP interpolation within this isothermal experiment only; not a thermodynamic prediction or extrapolation.'))
+            for o in obs:
+                if o.get('role')!='validation' or o.get(prop) is None or not 0<=o['stage']<len(stages):continue
+                p=float(stages[o['stage']]['pressure']);v=float(o[prop]);pred=float(curve(p)) if x[0]<=p<=x[-1] else None
+                checks.append(dict(experiment=ex['id'],property=prop,pressure=p,measured=v,predicted=pred,error=None if pred is None else pred-v,relativeError=None if pred is None or v==0 else 100*(pred-v)/v))
+    return curves,checks
