@@ -1,0 +1,7 @@
+{
+  "name": "petromind",
+  "compatibility_date": "2026-10-25",
+  "account_id": "6cb58274ee47901292250c43193fbc68",
+  "assets": { "directory": "./public" },
+  "routes": [{"pattern": "petromind.dana-edu.pp.ua", "custom_domain": true}]
+}
