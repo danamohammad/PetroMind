@@ -1,0 +1,154 @@
+[
+  {
+    "case": "Heavy reservoir",
+    "values": {
+      "vaporFraction": {
+        "thermopack": 0.0,
+        "thermo": 0,
+        "relativeDifference": null,
+        "absoluteDifference": 0.0
+      },
+      "Bo": {
+        "thermopack": 1.453814764432108,
+        "thermo": 1.4538147643654011,
+        "relativeDifference": 4.5884017612271257e-11,
+        "absoluteDifference": 6.670686225618283e-11
+      },
+      "Rs": {
+        "thermopack": 775.3342737071677,
+        "thermo": 775.334274017668,
+        "relativeDifference": 4.0047288614274763e-10,
+        "absoluteDifference": 3.105003543169005e-07
+      },
+      "Bg": {
+        "thermopack": null,
+        "thermo": null,
+        "relativeDifference": null,
+        "absoluteDifference": null
+      },
+      "liquidDensity": {
+        "thermopack": 584.396941387016,
+        "thermo": 584.3969413882174,
+        "relativeDifference": 2.0558671956607396e-12,
+        "absoluteDifference": 1.2014425010420382e-09
+      }
+    }
+  },
+  {
+    "case": "Heavy two-phase",
+    "values": {
+      "vaporFraction": {
+        "thermopack": 0.36261944208425684,
+        "thermo": 0.3626194400952291,
+        "relativeDifference": 5.485165684646072e-09,
+        "absoluteDifference": 1.989027720306069e-09
+      },
+      "Bo": {
+        "thermopack": 1.231727586293586,
+        "thermo": 1.2317275874830922,
+        "relativeDifference": 9.657218726740165e-10,
+        "absoluteDifference": 1.1895062712596882e-09
+      },
+      "Rs": {
+        "thermopack": 299.62064084194515,
+        "thermo": 299.6206428160738,
+        "relativeDifference": 6.5887606195846e-09,
+        "absoluteDifference": 1.9741286791941093e-06
+      },
+      "Bg": {
+        "thermopack": null,
+        "thermo": null,
+        "relativeDifference": null,
+        "absoluteDifference": null
+      },
+      "liquidDensity": {
+        "thermopack": 628.815312602926,
+        "thermo": 628.8153122500752,
+        "relativeDifference": 5.611359239289576e-10,
+        "absoluteDifference": 3.5285086141811917e-07
+      },
+      "gasDensity": {
+        "thermopack": 78.0671377279118,
+        "thermo": 78.06713730240295,
+        "relativeDifference": 5.450550084756851e-09,
+        "absoluteDifference": 4.2550884415959445e-07
+      }
+    }
+  },
+  {
+    "case": "Gas mixture",
+    "values": {
+      "vaporFraction": {
+        "thermopack": 1.0,
+        "thermo": 1,
+        "relativeDifference": 0.0,
+        "absoluteDifference": 0.0
+      },
+      "Bo": {
+        "thermopack": null,
+        "thermo": null,
+        "relativeDifference": null,
+        "absoluteDifference": null
+      },
+      "Rs": {
+        "thermopack": null,
+        "thermo": null,
+        "relativeDifference": null,
+        "absoluteDifference": null
+      },
+      "Bg": {
+        "thermopack": 0.03366021656140042,
+        "thermo": 0.03366021654304405,
+        "relativeDifference": 5.453432524570007e-10,
+        "absoluteDifference": 1.8356371978001107e-11
+      },
+      "gasDensity": {
+        "thermopack": 3.909283515564024,
+        "thermo": 3.909283515660058,
+        "relativeDifference": 2.4565587826650788e-11,
+        "absoluteDifference": 9.603384754086619e-11
+      }
+    }
+  },
+  {
+    "case": "Light two-phase",
+    "values": {
+      "vaporFraction": {
+        "thermopack": 0.5359593304837228,
+        "thermo": 0.5359593450887821,
+        "relativeDifference": 2.7250312556189123e-08,
+        "absoluteDifference": 1.4605059273087306e-08
+      },
+      "Bo": {
+        "thermopack": null,
+        "thermo": null,
+        "relativeDifference": null,
+        "absoluteDifference": null
+      },
+      "Rs": {
+        "thermopack": null,
+        "thermo": null,
+        "relativeDifference": null,
+        "absoluteDifference": null
+      },
+      "Bg": {
+        "thermopack": 0.008247849941838182,
+        "thermo": 0.008247849875712636,
+        "relativeDifference": 8.01730711365305e-09,
+        "absoluteDifference": 6.612554601104215e-11
+      },
+      "liquidDensity": {
+        "thermopack": 578.8110983356944,
+        "thermo": 578.8110982421294,
+        "relativeDifference": 1.616502341350256e-10,
+        "absoluteDifference": 9.356494956591632e-08
+      },
+      "gasDensity": {
+        "thermopack": 20.708450016210225,
+        "thermo": 20.70845096843148,
+        "relativeDifference": 4.598225631402823e-08,
+        "absoluteDifference": 9.522212565116206e-07
+      }
+    }
+  }
+]
