@@ -11,8 +11,8 @@ Live site: https://petromind.dana-edu.pp.ua
 3. Enter reservoir, separator, stock-tank and standard-gas conditions. All pressures are absolute (psia), temperatures are Celsius.
 4. Click **Calculate fluid properties**. The first calculation loads scientific Python and dependencies; subsequent calculations reuse them.
 5. Choose a PVT property, zoom the chart, download PNG, export the calculated CSV, or print to PDF.
-6. Use **Phase behavior** to calculate temperature–pressure saturation roots. Failed roots remain gaps.
-7. Use **Laboratory comparison** to enter or import measured Bo, Rs, Bg, liquid density or bubble pressure. Compare using the current fluid model.
+6. Use **Phase behavior → Trace phase envelope**. Adaptive continuation follows bubble and dew branches through turning points. It reports a verified mixture critical point, cricondentherm and cricondenbar. A complete trace must return to the chosen pressure floor on both branches; limits or numerical failures are marked partial.
+7. Use **Laboratory & tuning** to enter or import measured Bo, Rs, Bg, liquid density, bubble pressure or CCE relative volume (total volume / saturated-liquid volume at the same temperature). Compare first, select up to six bounded parameters, then fit. Review the diagnostics before **Apply fitted parameters**. Revert is available, and both fit reports and prediction tables can be exported. The synthetic tuning demo tests recovery of a known interaction; it is not laboratory calibration.
 8. Use **Production trends** to import dates, oil rates and optional water rates, or enter them manually. The example is explicitly synthetic.
 9. **Save project** stores inputs in this browser. **Export project** creates a portable JSON backup. Import it on another device to continue.
 
@@ -24,18 +24,19 @@ All scientific computation and imported-data processing happen in the visitor's 
 
 Thermo 0.6.1 provides PR, PR78 and SRK vapor–liquid equilibrium. Pyodide 0.29.0 runs the same Python engine in a Web Worker. Plotly draws actual calculated points. Component properties and default PR interactions come from ThermoPack 2.2.3; the original supplied pseudocomponent assumptions are preserved and editable.
 
-This is an uncalibrated research tool. Agreement with another EOS implementation is numerical verification, not validation against laboratory measurements. Heavy-cut labels must represent non-overlapping fractions. No water/brine, solids, wax, asphaltene or liquid–liquid equilibrium model is provided. No volume translation or automated laboratory fitting is claimed. No generative-AI service is used.
+The supplied example is an uncalibrated research model; each user fluid must be calibrated separately. Agreement with another EOS implementation is numerical verification, not validation against laboratory measurements. Heavy-cut labels must represent non-overlapping fractions. No water/brine, solids, wax, asphaltene or liquid–liquid equilibrium model is provided. No volume translation is used. Bounded local least-squares fitting adjusts selected interactions or pseudocomponent Tc/Pc/acentric factors. It uses scaled residuals and equal total weight per property; zero values have explicit scale floors. Rank-deficient or nonconverged fits cannot be applied. Boundary hits are disclosed. Fitting data are not independent validation. No generative-AI service is used.
 
-Independent isothermal saturation roots do not trace every possible retrograde branch. Near-critical or nonconvergent results remain unavailable. The application does not infer a mixture critical point from a curve maximum. Production forecasts are simple exponential historical baselines with no economic limit, operational constraints or calibrated uncertainty band.
+Phase-envelope tracing uses log K, log T and log P equilibrium equations with adaptive pseudo-arclength steps and a fixed log-K specification near criticality. Scaled residuals reject trivial solutions. The mixture critical point satisfies a zero minimum stability eigenvalue and zero third derivative along its eigenvector. Maxima are refined separately; they are not used as critical-point guesses. This follows a connected V–L envelope; disconnected branches, LLE and solids are outside scope. Numerical failures retain only converged points. Production forecasts are simple exponential historical baselines with no economic limit, operational constraints or calibrated uncertainty band.
 
 ## Implementation
 
-- `public/Fluid Engine.py`: validated inputs, EOS construction, flash, separator train, PVT sweep, saturation and lab comparison.
+- `public/Fluid Engine.py`: validated inputs, EOS construction, flash, separator train, PVT sweep, saturation, continuation, mixture criticality, CCE volume and bounded laboratory fitting.
 - `public/Calculation Worker.js`: pinned browser Python runtime and request dispatch.
 - `public/App.mjs`: UI, input editing, charts, imports, project storage and export.
 - `public/Data Tools.mjs`: CSV parser, CSV export protection and production analysis.
 - `references/ThermoPack Comparison.json`: independent-engine comparisons for four fluids/states.
-- `tests/Engine Tests.py` and `tests/Data Tests.mjs`: physical/data invariants and import/export checks.
+- `tests/Engine Tests.py`, `tests/Advanced EOS Tests.py`, `tests/Data Tests.mjs`: physical/data invariants, continuation, partial-trace handling, synthetic fitting, held-out prediction and import/export checks.
+- `tests/Envelope Crosscheck.py` and `references/Envelope Comparison.json`: reproducible independent ThermoPack checks of binary PR/SRK and heavy PR envelope critical points and maxima.
 
 The liquid and vapor EOS classes preserve their respective V–L branches during Thermo's result sorting. Without this setting, its default PIP phase-identification heuristic relabels some dense vapor branches as a second liquid. This release is explicitly V–L, not a model of LLE.
 
@@ -57,6 +58,8 @@ With Python 3.12+:
 python3 -m venv 'Validation Environment'
 'Validation Environment/bin/python' -m pip install -r requirements.txt
 'Validation Environment/bin/python' 'tests/Engine Tests.py'
+'Validation Environment/bin/python' 'tests/Advanced EOS Tests.py'
+'Validation Environment/bin/python' 'tests/Envelope Crosscheck.py'
 node --test 'tests/Data Tests.mjs'
 ```
 
@@ -80,3 +83,9 @@ Rebuilt for Dana Mohammad Khidhir from the supplied PetroMind prototype. The ori
 ## Visual design
 
 The blue and cyan visual theme follows the supplied energy-industry design reference. The offshore banner is an original AI-generated illustration, created with the built-in image-generation tool. Prompt: “Original photorealistic offshore platform at blue hour; wide 3:1 composition, illuminated platform on the right, quiet dark-blue ocean and sky on the left for white headings; marine blue, steel blue and cyan with restrained amber work lights; no text or logos.” Saved asset: `public/Offshore Energy.png`.
+
+## Calibration records
+
+Project imports can include a sample-specific calibration record with source table/page provenance, fitting and held-out metrics, lump definitions and qualifications. A fitted model status applies only while its composition, EOS and parameters match that record. The public repository does not include private laboratory reports or project exports. No single calibration is valid for every fluid. CCE data and differential liberation are different experiments: do not compare differential-liberation Bo/Rs to a separator-flash prediction.
+
+Method references: [phase-envelope equations](https://thermotools.github.io/thermopack/memo/envelopes/envelopes.pdf), [mixture criticality](https://thermotools.github.io/thermopack/memo/critical/critical.pdf).

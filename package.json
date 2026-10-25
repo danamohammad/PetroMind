@@ -1,1 +1,10 @@
-{"name":"petromind","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"python3 -m http.server 8765 --directory public","test":"python3 'tests/Engine Tests.py'"}}
+{
+  "name": "petromind",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8765 --directory public",
+    "test": "python3 \"tests/Engine Tests.py\" && python3 \"tests/Advanced EOS Tests.py\" && node \"tests/Data Tests.mjs\""
+  }
+}
