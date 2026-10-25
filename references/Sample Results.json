@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.2.0",
   "model": "PR",
   "names": [
     "C1",
@@ -491,6 +491,6 @@
   },
   "signature": "8255d038776b480a41806d99a2cd8410540429745864e9a899870393b6a8a873",
   "warnings": [
-    "Heavy-end properties are inherited assumptions, not a laboratory characterization."
+    "Heavy-end properties require sample-specific characterization and validation."
   ]
 }
