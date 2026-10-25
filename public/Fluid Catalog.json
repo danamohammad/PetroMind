@@ -1,0 +1,303 @@
+{
+  "catalog": [
+    {
+      "id": "C1",
+      "name": "Methane",
+      "Tc": 190.555,
+      "Pc": 4598837.0,
+      "omega": 0.01131,
+      "MW": 16.043000000000003,
+      "pseudo": false
+    },
+    {
+      "id": "C2",
+      "name": "Ethane",
+      "Tc": 305.4,
+      "Pc": 4883900.0,
+      "omega": 0.098,
+      "MW": 30.07,
+      "pseudo": false
+    },
+    {
+      "id": "C3",
+      "name": "Propane",
+      "Tc": 369.8,
+      "Pc": 4245500.0,
+      "omega": 0.152,
+      "MW": 44.096999999999994,
+      "pseudo": false
+    },
+    {
+      "id": "IC4",
+      "name": "Isobutane",
+      "Tc": 408.1,
+      "Pc": 3647700.0,
+      "omega": 0.176,
+      "MW": 58.124,
+      "pseudo": false
+    },
+    {
+      "id": "NC4",
+      "name": "n-Butane",
+      "Tc": 425.2,
+      "Pc": 3799700.0,
+      "omega": 0.193,
+      "MW": 58.124,
+      "pseudo": false
+    },
+    {
+      "id": "IC5",
+      "name": "Isopentane",
+      "Tc": 460.4,
+      "Pc": 3384300.0,
+      "omega": 0.227,
+      "MW": 72.15100000000001,
+      "pseudo": false
+    },
+    {
+      "id": "NC5",
+      "name": "n-Pentane",
+      "Tc": 469.6,
+      "Pc": 3374100.0,
+      "omega": 0.251,
+      "MW": 72.15100000000001,
+      "pseudo": false
+    },
+    {
+      "id": "NC6",
+      "name": "n-Hexane",
+      "Tc": 507.4,
+      "Pc": 2968800.0,
+      "omega": 0.296,
+      "MW": 86.17800000000001,
+      "pseudo": false
+    },
+    {
+      "id": "NC7",
+      "name": "n-Heptane",
+      "Tc": 540.2,
+      "Pc": 2735800.0,
+      "omega": 0.351,
+      "MW": 100.205,
+      "pseudo": false
+    },
+    {
+      "id": "NC8",
+      "name": "n-Octane",
+      "Tc": 568.8,
+      "Pc": 2482500.0,
+      "omega": 0.394,
+      "MW": 114.232,
+      "pseudo": false
+    },
+    {
+      "id": "NC10",
+      "name": "n-Decane",
+      "Tc": 617.6,
+      "Pc": 2107600.0,
+      "omega": 0.49,
+      "MW": 142.286,
+      "pseudo": false
+    },
+    {
+      "id": "N2",
+      "name": "Nitrogen",
+      "Tc": 126.161,
+      "Pc": 3394400.0,
+      "omega": 0.04,
+      "MW": 28.0134,
+      "pseudo": false
+    },
+    {
+      "id": "CO2",
+      "name": "Carbon Dioxide",
+      "Tc": 304.2,
+      "Pc": 7376500.0,
+      "omega": 0.225,
+      "MW": 44.0095,
+      "pseudo": false
+    },
+    {
+      "id": "H2S",
+      "name": "Hydrogen Sulfide",
+      "Tc": 373.2,
+      "Pc": 8936900.0,
+      "omega": 0.1,
+      "MW": 34.0809,
+      "pseudo": false
+    },
+    {
+      "id": "C7+",
+      "name": "C7+ Pseudo-cut",
+      "Tc": 588.89,
+      "Pc": 2776305.0,
+      "omega": 0.42,
+      "MW": 114.4,
+      "pseudo": true
+    },
+    {
+      "id": "C11+",
+      "name": "C11+ Pseudo-cut",
+      "Tc": 679.4,
+      "Pc": 2120732.25,
+      "omega": 0.65,
+      "MW": 166.6,
+      "pseudo": true
+    },
+    {
+      "id": "C15+",
+      "name": "C15+ Pseudo-cut",
+      "Tc": 760.2,
+      "Pc": 1663756.5000000002,
+      "omega": 0.85,
+      "MW": 230.1,
+      "pseudo": true
+    },
+    {
+      "id": "C20+",
+      "name": "C20+ Pseudo-cut",
+      "Tc": 896.78,
+      "Pc": 1041620.9999999999,
+      "omega": 1.25,
+      "MW": 409.2,
+      "pseudo": true
+    }
+  ],
+  "interactions": {
+    "C1|C2": -0.0026,
+    "C1|C3": 0.014,
+    "C1|IC4": 0.0256,
+    "C1|NC4": 0.0133,
+    "C1|IC5": -0.0056,
+    "C1|NC5": 0.023,
+    "C1|NC6": 0.0422,
+    "C1|NC7": 0.0352,
+    "C1|NC8": 0.0496,
+    "C1|NC10": 0.04361,
+    "C1|N2": 0.035,
+    "C1|CO2": 0.092,
+    "C1|H2S": 0.093,
+    "C2|C3": 0.0011,
+    "C2|IC4": -0.0067,
+    "C2|NC4": 0.0096,
+    "C2|NC5": 0.0078,
+    "C2|NC6": -0.01,
+    "C2|NC7": 0.0074,
+    "C2|NC8": 0.0185,
+    "C2|NC10": 0.02673,
+    "C2|N2": 0.041,
+    "C2|CO2": 0.15,
+    "C2|H2S": 0.085,
+    "C3|IC4": -0.0078,
+    "C3|NC4": 0.0033,
+    "C3|IC5": 0.0111,
+    "C3|NC5": 0.0267,
+    "C3|NC6": 0.0007,
+    "C3|NC7": 0.0056,
+    "C3|NC10": 0.01663,
+    "C3|N2": 0.076,
+    "C3|CO2": 0.15,
+    "C3|H2S": 0.075,
+    "IC4|NC4": -0.0004,
+    "IC4|NC10": 0.00945,
+    "IC4|N2": 0.094,
+    "IC4|CO2": 0.15,
+    "IC4|H2S": 0.06,
+    "NC4|NC5": 0.0174,
+    "NC4|NC6": -0.0056,
+    "NC4|NC7": 0.0074,
+    "NC4|NC10": 0.01016,
+    "NC4|N2": 0.07,
+    "NC4|CO2": 0.15,
+    "NC4|H2S": 0.06,
+    "IC5|NC5": 1.3e-06,
+    "IC5|NC10": 0.00621,
+    "IC5|N2": 0.087,
+    "IC5|CO2": 0.15,
+    "IC5|H2S": 0.06,
+    "NC5|NC7": 0.00137,
+    "NC5|NC8": 0.00276,
+    "NC5|NC10": 0.00603,
+    "NC5|N2": 0.088,
+    "NC5|CO2": 0.15,
+    "NC5|H2S": 0.06,
+    "NC6|NC7": -0.0078,
+    "NC6|NC10": 0.00335,
+    "NC6|N2": 0.15,
+    "NC6|CO2": 0.11,
+    "NC6|H2S": 0.05,
+    "NC7|NC10": 0.00166,
+    "NC7|N2": 0.142,
+    "NC7|CO2": 0.1,
+    "NC7|H2S": 0.04,
+    "NC8|NC10": 0.00064,
+    "NC8|N2": 0.08,
+    "NC8|CO2": 0.107,
+    "NC8|H2S": 0.04,
+    "NC10|N2": 0.08,
+    "NC10|CO2": 0.15,
+    "NC10|H2S": 0.045,
+    "N2|CO2": -0.036,
+    "N2|H2S": 0.1676,
+    "CO2|H2S": 0.099
+  },
+  "sample": [
+    {
+      "component": "C1",
+      "fraction": 0.4441117764471058
+    },
+    {
+      "component": "N2",
+      "fraction": 0.000998003992015968
+    },
+    {
+      "component": "C2",
+      "fraction": 0.05888223552894211
+    },
+    {
+      "component": "C3",
+      "fraction": 0.04491017964071856
+    },
+    {
+      "component": "CO2",
+      "fraction": 0.017964071856287425
+    },
+    {
+      "component": "IC4",
+      "fraction": 0.012974051896207584
+    },
+    {
+      "component": "NC4",
+      "fraction": 0.029940119760479042
+    },
+    {
+      "component": "IC5",
+      "fraction": 0.014970059880239521
+    },
+    {
+      "component": "NC5",
+      "fraction": 0.016966067864271458
+    },
+    {
+      "component": "NC6",
+      "fraction": 0.03293413173652695
+    },
+    {
+      "component": "C7+",
+      "fraction": 0.1157684630738523
+    },
+    {
+      "component": "C11+",
+      "fraction": 0.08982035928143713
+    },
+    {
+      "component": "C15+",
+      "fraction": 0.0718562874251497
+    },
+    {
+      "component": "C20+",
+      "fraction": 0.04790419161676647
+    }
+  ],
+  "source": "ThermoPack 2.2.3 pure-component constants and default PR interactions; original project pseudocomponents (uncalibrated)."
+}
