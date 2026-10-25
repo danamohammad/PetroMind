@@ -2,6 +2,7 @@
 No network requests or filesystem persistence of user inputs.
 """
 import json, math, io, base64, csv, hashlib
+from datetime import date, datetime
 import numpy as np
 from thermo import ChemicalConstantsPackage, PropertyCorrelationsPackage, CEOSGas, CEOSLiquid, PRMIX, PR78MIX, SRKMIX, FlashVL, HeatCapacityGas
 
@@ -28,6 +29,7 @@ def finite(v, name, low=None, high=None):
     return v
 
 def clean(x):
+    if isinstance(x, (date, datetime)): return x.strftime("%Y-%m-%d")
     if isinstance(x, dict): return {str(k): clean(v) for k,v in x.items()}
     if isinstance(x, (list,tuple,np.ndarray)): return [clean(v) for v in x]
     if isinstance(x, (np.integer,)): return int(x)
@@ -139,6 +141,11 @@ def surface(f,z,state,t,p,c):
     return out
 
 def saturation(f,z,t,vf):
+    # Bound browser work: omit nested pressure-bracketing/PT-flash fallback.
+    # Failed direct Newton roots remain explicitly unresolved.
+    f.dew_T_flash_algos = f.dew_T_flash_algos[:2]
+    f.bubble_T_flash_algos = f.bubble_T_flash_algos[:2]
+    f.DEW_BUBBLE_QUASI_NEWTON_MAXITER = 80
     try:
         r=f.flash(T=t+273.15,VF=vf,zs=z)
         p=float(r.P)/PSI
@@ -150,7 +157,7 @@ def saturation(f,z,t,vf):
         err=max(abs(math.log(a/b)) for a,b,zi in zip(fg,fl,z) if zi>1e-12 and a>0 and b>0)
         if err>1e-5:raise ValueError('Saturation fugacity residual exceeds tolerance.')
         return dict(pressure=p,error=None,residual=err)
-    except Exception as e:return dict(pressure=None,error=str(e)[:180])
+    except Exception as e:return dict(pressure=None,error='Direct saturation solver did not converge.' if isinstance(e, UnboundLocalError) else str(e)[:180])
 
 def calculate(req):
     f,z,names,data=build(req);c=conditions(req);t=c['temperature'];p=c['pressure']
@@ -232,7 +239,7 @@ def read_file(req):
         if len(values)>1001:raise ValueError('Use at most 1,000 rows.')
         if not values:raise ValueError('Workbook is empty.')
         columns=[str(x or '').strip() for x in values[0]]
-        if len(columns)!=len(set(columns)):raise ValueError('Duplicate or blank column headings.')
+        if any(not c for c in columns) or len(columns)!=len(set(columns)):raise ValueError('Duplicate or blank column headings.')
         rows=[dict(zip(columns,row)) for row in values[1:] if any(x is not None for x in row)]
     elif name.endswith('.csv'):
         text=raw.decode('utf-8-sig');reader=csv.DictReader(io.StringIO(text));rows=list(reader)
