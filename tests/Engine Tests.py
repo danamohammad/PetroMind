@@ -33,11 +33,10 @@ class EngineTests(unittest.TestCase):
   import base64
   r=dict(filename='sample.csv',data=base64.b64encode(b'Component,Mole Fraction\nC1,0.8\nC2,0.2').decode())
   o=e['read_file'](r);self.assertEqual(len(o['rows']),2)
- def test_saturation_retains_unresolved_gaps(self):
-  r=request();r.update(envelopeMin=-50,envelopeMax=400,envelopePoints=8)
-  rows=e['envelope'](r)['rows'];self.assertEqual(len(rows),8)
-  self.assertTrue(any(v['bubble'] is not None for v in rows))
-  self.assertTrue(any(v['dew'] is None and v['dewError'] for v in rows))
+ def test_saturation_rejects_supercritical_trivial_root(self):
+  r=request();r['composition']=[dict(component='C1',fraction=.5),dict(component='NC4',fraction=.5)]
+  f,z,*_=e['build'](r);s=e['saturation'](f,z,400,0)
+  self.assertIsNone(s['pressure']);self.assertTrue(s['error'])
  def test_excel_preserves_dates_and_zero(self):
   import base64,io,openpyxl,datetime
   book=openpyxl.Workbook();sheet=book.active;sheet.append(['date','oil_rate','water_rate']);sheet.append([datetime.date(2026,1,1),1000,0]);buf=io.BytesIO();book.save(buf)
