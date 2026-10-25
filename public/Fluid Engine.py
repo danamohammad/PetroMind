@@ -186,7 +186,7 @@ def calculate(req):
                 if before['phase']==after['phase']=='Liquid':
                     row['compressibility']=-(math.log(after['liquid']['volume'])-math.log(before['liquid']['volume']))/(2*dp)
             except Exception:pass
-    return dict(version=VERSION,model=req.get('model','PR'),names=names,z=z,state=state,surface=surf,saturation=sat,sweep=rows,conditions=c,signature=hashlib.sha256(json.dumps(req,sort_keys=True).encode()).hexdigest(),warnings=['Heavy-end properties are inherited assumptions, not a laboratory characterization.'] if any(d['pseudo'] for d in data) else [])
+    return dict(version=VERSION,model=req.get('model','PR'),names=names,z=z,state=state,surface=surf,saturation=sat,sweep=rows,conditions=c,signature=hashlib.sha256(json.dumps(req,sort_keys=True).encode()).hexdigest(),warnings=['Heavy-end properties require sample-specific characterization and validation.'] if any(d['pseudo'] for d in data) else [])
 
 def report(message):
     """Worker progress callback is optional so the same engine runs in CPython."""
