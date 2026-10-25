@@ -1,0 +1,29 @@
+[
+  {
+    "case": "Binary PR",
+    "criticalTemperatureDifferenceK": 3.148077439618646e-06,
+    "criticalPressureDifferencePsia": 4.3645349023790914e-05,
+    "maximumTemperatureDifferenceK": 0.005907904437947309,
+    "maximumPressureDifferencePsia": 0.009684714392051319,
+    "browserPoints": 70,
+    "referencePoints": 547
+  },
+  {
+    "case": "Binary SRK",
+    "criticalTemperatureDifferenceK": 5.4464347840621485e-06,
+    "criticalPressureDifferencePsia": 7.872132187003444e-05,
+    "maximumTemperatureDifferenceK": 0.0034996040686792185,
+    "maximumPressureDifferencePsia": 0.004932500981794874,
+    "browserPoints": 69,
+    "referencePoints": 556
+  },
+  {
+    "case": "Heavy PR",
+    "criticalTemperatureDifferenceK": 1.7082398471757188e-05,
+    "criticalPressureDifferencePsia": 0.0003228123055123433,
+    "maximumTemperatureDifferenceK": 0.001615443771243008,
+    "maximumPressureDifferencePsia": 0.00431711647524935,
+    "browserPoints": 392,
+    "referencePoints": 1000
+  }
+]
