@@ -9,7 +9,7 @@ from thermo import ChemicalConstantsPackage, PropertyCorrelationsPackage, CEOSGa
 PSI = 6894.757293168
 SCF = 35.3146667215
 STB = 6.2898107704
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 # Preserve the requested V-L EOS branches. Thermo's default PIP post-sort can
 # relabel a dense vapor branch as a second liquid without changing equilibrium.
@@ -188,34 +188,275 @@ def calculate(req):
             except Exception:pass
     return dict(version=VERSION,model=req.get('model','PR'),names=names,z=z,state=state,surface=surf,saturation=sat,sweep=rows,conditions=c,signature=hashlib.sha256(json.dumps(req,sort_keys=True).encode()).hexdigest(),warnings=['Heavy-end properties are inherited assumptions, not a laboratory characterization.'] if any(d['pseudo'] for d in data) else [])
 
+def report(message):
+    """Worker progress callback is optional so the same engine runs in CPython."""
+    callback = globals().get('progress_callback')
+    if callback: callback(message)
+
+
 def envelope(req):
-    f,z,names,data=build(req)
-    lo=finite(req.get('envelopeMin',-50),'Envelope minimum temperature',-200,550)
-    hi=finite(req.get('envelopeMax',400),'Envelope maximum temperature',-150,600)
+    """Pseudo-arclength continuation of a fixed-composition V-L boundary.
+
+    The parent composition stays z and the incipient composition is z*exp(k).
+    Dividing equilibrium equations by ||k|| removes attraction to the trivial
+    equal-composition solution. Root labels swap as the light-component k
+    changes sign at the critical point. No interpolation bridges failed steps.
+    """
+    from scipy.optimize import root, least_squares
+    f,z,names,data=build(req);z=np.array(z);n=len(z)
+    lo=finite(req.get('envelopeMin',-200),'Minimum temperature',-200,550)+273.15
+    hi=finite(req.get('envelopeMax',600),'Maximum temperature',-150,600)+273.15
+    pmin=finite(req.get('envelopePressure',14.7),'Envelope pressure floor',.1,10000)*PSI
     if hi<=lo:raise ValueError('Envelope maximum temperature must exceed minimum.')
-    n=int(finite(req.get('envelopePoints',25),'Envelope points',8,60));rows=[]
-    for t in np.linspace(lo,hi,n):
-        row=dict(temperature=float(t))
-        for k,vf in [('bubble',0),('dew',1)]:
-            s=saturation(f,z,float(t),vf);row[k]=s['pressure'];row[k+'Error']=s['error']
-        rows.append(row)
-    return dict(rows=rows,note='Independent isothermal saturation roots. Gaps are unresolved; no fabricated critical point or interpolation across gaps. Retrograde/multiple-root envelopes may require continuation in a specialist simulator.')
+    budget=finite(req.get('envelopePoints',500),'Maximum continuation steps',100,1600)
+    if budget!=int(budget):raise ValueError('Maximum steps must be an integer.')
+    budget=int(budget);light=int(np.argmin([d['Tc'] for d in data]))
+    def states(u):
+        k=u[:n];T,P=np.exp(u[n:]);w=z*np.exp(k);sw=sum(w)
+        if not np.isfinite(sw) or sw<=0:raise ValueError('Invalid trial composition.')
+        parent,trial=(f.liquid,f.gas) if k[light]>=0 else (f.gas,f.liquid)
+        a=parent.to(T=float(T),P=float(P),zs=z.tolist())
+        b=trial.to(T=float(T),P=float(P),zs=(w/sw).tolist())
+        return a,b,sw
+    def residual(u):
+        if not np.all(np.isfinite(u)) or max(abs(u[:n]))>300 or not 3< u[-2]<8 or not 0<u[-1]<22:
+            raise ValueError('Continuation iterate outside EOS bounds.')
+        a,b,sw=states(u);k=u[:n]
+        return np.r_[k+np.array(b.lnphis())-a.lnphis()-math.log(sw),math.log(sw)]/max(np.linalg.norm(k),1e-10)
+    def tangent(u):
+        h=1e-5;eye=np.eye(n+2)*h
+        j=np.array([(residual(u+d)-residual(u-d))/(2*h) for d in eye]).T
+        return np.linalg.svd(j)[2][-1]
+    def point(u):
+        a,b,sw=states(u);T,P=np.exp(u[-2:]);k=u[:n]
+        err=float(max(abs(residual(u)))*np.linalg.norm(k))
+        if err>1e-6 or abs(sw-1)>1e-7:raise ValueError('Equilibrium tolerance exceeded.')
+        bubble=k[light]>=0;x=a.zs if bubble else b.zs;y=b.zs if bubble else a.zs
+        return dict(temperature=float(T-273.15),pressure=float(P/PSI),branch='bubble' if bubble else 'dew',
+                    fugacityResidual=err,compositionResidual=abs(sw-1),liquidVolume=a.V() if bubble else b.V(),gasVolume=b.V() if bubble else a.V(),
+                    liquidComposition=list(x),gasComposition=list(y))
+    # Start at an ordinary noncritical bubble point, then trace both directions.
+    f.dew_T_flash_algos=f.dew_T_flash_algos[:2];f.bubble_T_flash_algos=f.bubble_T_flash_algos[:2]
+    f.DEW_BUBBLE_QUASI_NEWTON_MAXITER=80
+    candidates=[float(np.dot(z,[d['Tc'] for d in data]))*.7,finite(req['conditions']['temperature'],'Temperature',-200,600)+273.15]
+    candidates+=list(np.linspace(max(lo,100),min(hi,750),24))
+    seed=None
+    for T in candidates:
+        if not lo<T<hi:continue
+        try:
+            s=f.flash(T=float(T),VF=0,zs=z.tolist())
+            if s.gas is None or not s.liquid_count or not pmin<s.P<30000*PSI:continue
+            k=np.log(np.array(s.gas.zs)/z);u=np.r_[k,math.log(T),math.log(s.P)]
+            if np.linalg.norm(k)>.2 and k[light]>0 and max(abs(residual(u)))<1e-7:
+                point(u);seed=u;break
+        except Exception:continue
+    if seed is None:raise ValueError('No nontrivial starting boundary found inside these limits. Expand the temperature range or lower the pressure floor.')
+    limits=[(n,math.log(lo),'Minimum temperature'),(n,math.log(hi),'Maximum temperature'),(n+1,math.log(pmin),'Pressure floor'),(n+1,math.log(30000*PSI),'Pressure ceiling')]
+    def trace(direction):
+        u=seed.copy();tan=tangent(u);tan*=direction*(1 if tan[-2]>0 else -1);ds=.12;path=[]
+        for step in range(budget):
+            if step%20==0:report(f'Tracing phase envelope: {step} steps on branch {1 if direction>0 else 2}…')
+            accepted=False
+            for attempt in range(12):
+                pred=u+ds*tan
+                pivot=int(np.argmax(abs(tan[:n]))) if np.linalg.norm(u[:n])<.7 else None
+                if pivot is not None and abs(pred[pivot])<.02:
+                    target=-math.copysign(.02,u[pivot]) if u[pivot]*tan[pivot]<0 else math.copysign(.02,u[pivot])
+                    pred=u+(target-u[pivot])/tan[pivot]*tan
+                specification=(lambda v:v[pivot]-pred[pivot]) if pivot is not None else (lambda v:np.dot(v-pred,tan))
+                try:
+                    equations=lambda v:np.r_[residual(v),specification(v)]
+                    sol=root(equations,pred,tol=1e-9,options={'maxfev':(n+2)*40,'eps':1e-8})
+                    nxt=sol.x
+                    if pivot is not None and max(abs(equations(nxt)))>=1e-7:
+                        nxt=least_squares(equations,pred,jac='3-point',diff_step=1e-4,max_nfev=60,gtol=1e-11,ftol=1e-11,xtol=1e-11).x
+                    if max(abs(residual(nxt)))<1e-7 and np.linalg.norm(nxt-pred)<(.2 if pivot is not None else .8*ds) and np.linalg.norm(nxt[:n])>max(1e-5,.2*np.linalg.norm(pred[:n])):
+                        point(nxt);accepted=True;break
+                except Exception:pass
+                ds*=.5
+                if ds<1e-5:break
+            if not accepted:return path,'Corrector did not converge; trace stops here.'
+            # Land exactly on the first requested boundary instead of clipping a line.
+            crossed=[]
+            for idx,bound,label in limits:
+                if (u[idx]-bound)*(nxt[idx]-bound)<0:
+                    crossed.append(((bound-u[idx])/(nxt[idx]-u[idx]),idx,bound,label))
+            if crossed:
+                frac,idx,bound,label=min(crossed)
+                guess=u+frac*(nxt-u)
+                try:
+                    end=root(lambda v:np.r_[residual(v),v[idx]-bound],guess,tol=1e-9)
+                    if max(abs(residual(end.x)))>1e-7 or abs(end.x[idx]-bound)>1e-7:raise ValueError()
+                    point(end.x);path.append(end.x)
+                    return path,label
+                except Exception:return path,'Boundary corrector failed; last converged point retained.'
+            path.append(nxt);u=nxt
+            try:newtan=tangent(u);newtan*=1 if newtan@tan>0 else -1;tan=newtan
+            except Exception:return path,'Tangent calculation failed; last converged point retained.'
+            ds=min(.12 if np.linalg.norm(u[:n])<1 else .5,ds*1.25)
+        return path,'Step budget reached; increase the maximum steps.'
+    forward,reason1=trace(1);backward,reason2=trace(-1)
+    path=list(reversed(backward))+[seed]+forward
+    rows=[point(u) for u in path]
+    critical=None
+    # Solve actual mixture criticality: zero smallest stability eigenvalue and
+    # zero third derivative along its eigenvector (Michelsen T,P formulation).
+    crossing=next(((a,b) for a,b in zip(path,path[1:]) if a[light]*b[light]<0),None)
+    if crossing:
+        report('Refining the mixture critical point and envelope turning points…')
+        a,b=crossing;q=(a[-2:]*abs(b[light])+b[-2:]*abs(a[light]))/(abs(a[light])+abs(b[light]))
+        sq=np.sqrt(z)
+        def criticality(q):
+            T,P=np.exp(q)
+            def matrix(Y):
+                total=sum(Y);ph=f.gas.to(T=float(T),P=float(P),zs=(Y/total).tolist())
+                d=np.array(ph.eos_mix.dlnphis_dns(ph.Z()))/total
+                return np.diag(z/Y)+sq[:,None]*d*sq[None,:]
+            B=matrix(z);ev,U=np.linalg.eigh((B+B.T)/2);v=U[:,0];v*=1 if v[np.argmax(abs(v))]>=0 else -1
+            direction=sq*v;h=min(.0002,.001*min(z/np.maximum(abs(direction),1e-30)))
+            third=float(v@(matrix(z+h*direction)-matrix(z-h*direction))@v/(2*h))
+            return np.array([ev[0],third])
+        try:
+            cr=root(criticality,q,tol=1e-8,options={'eps':1e-6,'maxfev':100})
+            checks=criticality(cr.x);T,P=np.exp(cr.x)
+            if max(abs(checks))<1e-5 and max(abs(cr.x-q))<.05:
+                critical=dict(temperature=float(T-273.15),pressure=float(P/PSI),stabilityEigenvalue=float(checks[0]),thirdDerivative=float(checks[1]),method='Mixture stability criticality equations')
+        except Exception:pass
+    extrema={}
+    for label,idx in [('cricondentherm',n),('cricondenbar',n+1)]:
+        best=max(range(len(path)),key=lambda j:path[j][idx])
+        if 0<best<len(path)-1:
+            try:
+                sol=root(lambda v:np.r_[residual(v),tangent(v)[idx]],path[best],tol=1e-8,options={'maxfev':(n+2)*35})
+                if max(abs(residual(sol.x)))<1e-7 and abs(tangent(sol.x)[idx])<1e-5 and np.linalg.norm(sol.x-path[best])<1:
+                    extrema[label]=point(sol.x)
+            except Exception:pass
+    # A complete supported envelope must traverse the critical neighborhood and
+    # return to the pressure floor on both sides. Other exits are partial traces.
+    complete=reason1==reason2=='Pressure floor' and critical is not None and len(extrema)==2
+    status='Complete within pressure limits' if complete else 'Partial trace'
+    note=f'{status}. {len(rows)} converged points. Endpoints: {reason2}; {reason1}. '
+    note+='Critical point verified by mixture stability equations. ' if critical else 'Critical point not verified. '
+    note+='Vapor–liquid model only; disconnected branches, liquid–liquid equilibria and solids are outside this trace. Limits do not represent experimental validation.'
+    return dict(rows=rows,critical=critical,extrema=extrema,complete=complete,status=status,note=note,
+                endpoints=[reason2,reason1],method='Adaptive pseudo-arclength predictor–corrector',names=names,
+                inputSignature=hashlib.sha256(json.dumps(req,sort_keys=True).encode()).hexdigest())
+
+
+def tune(req):
+    """Bounded weighted least-squares calibration. Never mutates the input model."""
+    import copy
+    from scipy.optimize import least_squares
+    build(req);conditions(req)
+    specs=req.get('tuningParameters',[])
+    if not 1<=len(specs)<=6:raise ValueError('Select between one and six tuning parameters.')
+    keys=[];starts=[];lower=[];upper=[];parameters=[]
+    present={r['component'] for r in req['composition'] if float(r['fraction'])>0}
+    cats={c['id']:c for c in req['catalog']}
+    for s in specs:
+        kind=s.get('kind');name=str(s.get('name',''));key=(kind,name)
+        if kind=='kij':
+            pair=name.split('|')
+            if len(pair)!=2 or pair[0]==pair[1] or not set(pair)<=present:raise ValueError('Tuning interaction pair must contain two active components.')
+            name='|'.join(sorted(pair));key=(kind,name)
+            initial=float(req.get('interactions',{}).get(name,req.get('interactions',{}).get('|'.join(reversed(name.split('|'))),0)))
+            allowed=(-.5,.5)
+        elif kind in ('Tc','Pc','omega'):
+            if name not in present or not cats[name].get('pseudo'):raise ValueError('Critical-property tuning is limited to active pseudocomponents.')
+            initial=float(cats[name][kind]);allowed={'Tc':(50,2000),'Pc':(1000,1e9),'omega':(-.5,3)}[kind]
+        else:raise ValueError('Unsupported tuning parameter.')
+        if key in keys:raise ValueError('Duplicate tuning parameter.')
+        low=finite(s.get('lower'),name+' lower bound',*allowed);high=finite(s.get('upper'),name+' upper bound',*allowed)
+        if not low<high or not low<=initial<=high:raise ValueError('Bounds must contain the current parameter value and have positive width.')
+        keys.append(key);starts.append(initial);lower.append(low);upper.append(high);parameters.append(dict(kind=kind,name=name,before=initial,lower=low,upper=high))
+    before=comparison(req);observations=before['rows']
+    if len(observations)<max(3,len(specs)+2):raise ValueError('Use at least three measured values and at least two more measurements than fitted parameters.')
+    if len(observations)>150:raise ValueError('Automatic tuning accepts at most 150 measured values per fit.')
+    if any(r['predicted'] is None for r in observations):raise ValueError('The initial model cannot predict every selected measurement. Remove inapplicable measurements or correct the starting model.')
+    # Each property receives equal total weight. Zero measurements use an explicit
+    # scale floor; they are not dropped or divided by zero.
+    floors={'Bo':.01,'Rs':1.,'Bg':1e-5,'density':1.,'bubble':1.,'relativeVolume':.01}
+    counts={p:sum(r['property']==p for r in observations) for p in floors}
+    weights=req.get('tuningWeights',{})
+    scales=np.array([max(abs(r['measured']),floors[r['property']])*math.sqrt(counts[r['property']])/math.sqrt(finite(weights.get(r['property'],1),'Property weight',.01,100)) for r in observations])
+    measured=np.array([r['measured'] for r in observations]);lower=np.array(lower);upper=np.array(upper);width=upper-lower
+    evaluations=0;invalid=0;cache={}
+    def candidate(v):
+        model=copy.deepcopy(req);values=lower+width*v
+        for p,value in zip(parameters,values):
+            if p['kind']=='kij':
+                model.setdefault('interactions',{})[p['name']]=float(value)
+                model['interactions'].pop('|'.join(reversed(p['name'].split('|'))),None)
+            else:next(c for c in model['catalog'] if c['id']==p['name'])[p['kind']]=float(value)
+        return model
+    def objective(v):
+        nonlocal evaluations,invalid
+        key=tuple(v)
+        if key in cache:return cache[key]
+        evaluations+=1
+        if evaluations%5==1:report(f'Fitting EOS: {evaluations} model evaluations…')
+        try:
+            rows=comparison(candidate(v))['rows'];pred=np.array([r['predicted'] if r['predicted'] is not None else np.nan for r in rows])
+            if len(rows)!=len(measured) or not np.all(np.isfinite(pred)):raise ValueError('Unavailable prediction')
+            residual=(pred-measured)/scales
+        except Exception:
+            invalid+=1;residual=np.full(len(measured),1e3+np.linalg.norm(v))
+        cache[key]=residual
+        return residual
+    start=(np.array(starts)-lower)/width;initial=objective(start)
+    fit=least_squares(objective,start,bounds=(np.zeros(len(specs)),np.ones(len(specs))),diff_step=1e-4,
+                      max_nfev=100,ftol=1e-8,xtol=1e-8,gtol=1e-7)
+    fitted=candidate(fit.x);after=comparison(fitted)
+    final=objective(fit.x);beforeScore=float(np.linalg.norm(initial));afterScore=float(np.linalg.norm(final))
+    if any(r['predicted'] is None for r in after['rows']):raise ValueError('Final fitted model has unavailable predictions; no fit is offered.')
+    singular=np.linalg.svd(fit.jac,compute_uv=False);rank=int(sum(singular>max(singular[0]*1e-6,1e-8)))
+    condition=float(singular[0]/singular[-1]) if singular[-1]>1e-14 else None
+    for p,value,x in zip(parameters,lower+width*fit.x,fit.x):p.update(after=float(value),atBound=bool(x<.001 or x>.999))
+    warnings=[]
+    if not fit.success:warnings.append('Optimizer stopped before convergence; candidate cannot be applied.')
+    if rank<len(specs) or condition is None or condition>1e6:warnings.append('Parameters are not independently identifiable from these measurements; candidate cannot be applied.')
+    if any(p['atBound'] for p in parameters):warnings.append('A parameter reached its bound. Inspect physical plausibility before applying.')
+    if invalid:warnings.append(f'{invalid} trial models failed to predict all observations and were penalized.')
+    improved=afterScore<beforeScore*(1-1e-5)
+    if not improved:warnings.append('No material improvement over the starting model.')
+    eligible=bool(fit.success and improved and rank==len(specs) and condition is not None and condition<=1e6)
+    rows=[dict(**{k:v for k,v in a.items() if k not in ('predicted','error','relativeError')},before=a['predicted'],after=b['predicted'],beforeError=a['error'],afterError=b['error']) for a,b in zip(before['rows'],after['rows'])]
+    return dict(parameters=parameters,rows=rows,beforeMetrics=before['metrics'],afterMetrics=after['metrics'],beforeScore=beforeScore,afterScore=afterScore,
+                improvementPercent=100*(1-afterScore/beforeScore) if beforeScore else 0,evaluations=evaluations,converged=bool(fit.success),eligible=eligible,
+                rank=rank,conditionNumber=condition,warnings=warnings,message=str(fit.message),
+                candidate=dict(catalog=fitted['catalog'],interactions=fitted.get('interactions',{})),
+                note='Bounded local least squares; relative residuals with equal total weight per property. This is a training-data fit, not independent validation. Review held-out data and physical plausibility.',
+                inputSignature=hashlib.sha256(json.dumps(req,sort_keys=True).encode()).hexdigest())
+
 
 def comparison(req):
     f,z,names,data=build(req);c=conditions(req);rows=req['lab'];out=[]
     if not 1<=len(rows)<=250:raise ValueError('Use 1 to 250 laboratory rows.')
-    keys={'Bo':'Bo','Rs':'Rs','Bg':'Bg','density':'liquidDensity','bubble':'bubble'}
+    keys={'Bo':'Bo','Rs':'Rs','Bg':'Bg','density':'liquidDensity','bubble':'bubble','relativeVolume':'relativeVolume'}
+    saturation_cache={}
     for i,r in enumerate(rows):
         p=finite(r.get('pressure'),f'Lab row {i+1} pressure',.1,30000)
         t=finite(r.get('temperature',c['temperature']),f'Lab row {i+1} temperature',-200,600)
-        a=flash(f,z,t,p);b=surface(f,z,a,t,p,c)
-        predictions={**b,'density':a['liquid']['density'] if a['liquid'] else None}
-        if r.get('bubble') is not None:predictions['bubble']=saturation(f,z,t,0)['pressure']
+        needed=[k for k in keys if r.get(k) not in (None,'')]
+        predictions={}
+        if any(k!='bubble' for k in needed):
+            a=flash(f,z,t,p)
+            if any(k in needed for k in ('Bo','Rs','Bg')):predictions.update(surface(f,z,a,t,p,c))
+            predictions['density']=a['liquid']['density'] if a['liquid'] else None
+        if any(k in needed for k in ('bubble','relativeVolume')):
+            if t not in saturation_cache:saturation_cache[t]=saturation(f,z,t,0)['pressure']
+            pb=saturation_cache[t];predictions['bubble']=pb
+            if 'relativeVolume' in needed:
+                predictions['relativeVolume']=None
+                if pb is not None:
+                    reference=f.liquid.to(T=t+273.15,P=pb*PSI,zs=z).V()
+                    volume=sum(a['vaporFraction']*a['gas']['volume'] if phase=='gas' else (1-a['vaporFraction'])*a['liquid']['volume'] for phase in ('gas','liquid') if a[phase])
+                    predictions['relativeVolume']=volume/reference
         for prop in keys:
             if r.get(prop) is None or r.get(prop)=='':continue
             measured=finite(r[prop],f'Lab row {i+1} {prop}',0,None);pred=predictions.get(prop)
             out.append(dict(row=i+1,pressure=p,temperature=t,property=prop,measured=measured,predicted=pred,error=None if pred is None else pred-measured,relativeError=None if pred is None or measured==0 else 100*(pred-measured)/measured))
-    if not out:raise ValueError('No supported measured properties. Use Bo, Rs, Bg, density or bubble columns.')
+    if not out:raise ValueError('No supported measured properties. Use Bo, Rs, Bg, density, bubble or relativeVolume columns.')
     metrics=[]
     for prop in keys:
         rr=[x for x in out if x['property']==prop and x['error'] is not None]
@@ -253,6 +494,6 @@ def read_file(req):
 
 def dispatch_json(text):
     req=json.loads(text); task=req.get('task')
-    fun={'calculate':calculate,'envelope':envelope,'compare':comparison,'import':read_file}.get(task)
+    fun={'calculate':calculate,'envelope':envelope,'compare':comparison,'tune':tune,'import':read_file}.get(task)
     if fun is None:raise ValueError('Unknown calculation request.')
     return json.dumps(clean(fun(req)),allow_nan=False)

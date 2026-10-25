@@ -9,6 +9,7 @@ async function boot() {
   progress('Loading the PVT engine…');
   await py.runPythonAsync("import micropip\nawait micropip.install(['thermo==0.6.1', 'fluids==1.3.1', 'chemicals==1.5.2', 'openpyxl==3.1.5'])");
   const source=await fetch('Fluid Engine.py').then(r=>{if(!r.ok)throw Error('Engine download failed');return r.text()});
+  py.globals.set('progress_callback', progress);
   py.runPython(source);
   return py;
 }

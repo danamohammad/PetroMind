@@ -1,0 +1,229 @@
+{
+  "format": "PetroMind Project",
+  "version": 1,
+  "name": "Synthetic tuning demonstration",
+  "input": {
+    "catalog": [
+      {
+        "id": "C1",
+        "name": "Methane",
+        "Tc": 190.555,
+        "Pc": 4598837.0,
+        "omega": 0.01131,
+        "MW": 16.043000000000003,
+        "pseudo": false
+      },
+      {
+        "id": "C2",
+        "name": "Ethane",
+        "Tc": 305.4,
+        "Pc": 4883900.0,
+        "omega": 0.098,
+        "MW": 30.07,
+        "pseudo": false
+      },
+      {
+        "id": "C3",
+        "name": "Propane",
+        "Tc": 369.8,
+        "Pc": 4245500.0,
+        "omega": 0.152,
+        "MW": 44.096999999999994,
+        "pseudo": false
+      },
+      {
+        "id": "IC4",
+        "name": "Isobutane",
+        "Tc": 408.1,
+        "Pc": 3647700.0,
+        "omega": 0.176,
+        "MW": 58.124,
+        "pseudo": false
+      },
+      {
+        "id": "NC4",
+        "name": "n-Butane",
+        "Tc": 425.2,
+        "Pc": 3799700.0,
+        "omega": 0.193,
+        "MW": 58.124,
+        "pseudo": false
+      },
+      {
+        "id": "IC5",
+        "name": "Isopentane",
+        "Tc": 460.4,
+        "Pc": 3384300.0,
+        "omega": 0.227,
+        "MW": 72.15100000000001,
+        "pseudo": false
+      },
+      {
+        "id": "NC5",
+        "name": "n-Pentane",
+        "Tc": 469.6,
+        "Pc": 3374100.0,
+        "omega": 0.251,
+        "MW": 72.15100000000001,
+        "pseudo": false
+      },
+      {
+        "id": "NC6",
+        "name": "n-Hexane",
+        "Tc": 507.4,
+        "Pc": 2968800.0,
+        "omega": 0.296,
+        "MW": 86.17800000000001,
+        "pseudo": false
+      },
+      {
+        "id": "NC7",
+        "name": "n-Heptane",
+        "Tc": 540.2,
+        "Pc": 2735800.0,
+        "omega": 0.351,
+        "MW": 100.205,
+        "pseudo": false
+      },
+      {
+        "id": "NC8",
+        "name": "n-Octane",
+        "Tc": 568.8,
+        "Pc": 2482500.0,
+        "omega": 0.394,
+        "MW": 114.232,
+        "pseudo": false
+      },
+      {
+        "id": "NC10",
+        "name": "n-Decane",
+        "Tc": 617.6,
+        "Pc": 2107600.0,
+        "omega": 0.49,
+        "MW": 142.286,
+        "pseudo": false
+      },
+      {
+        "id": "N2",
+        "name": "Nitrogen",
+        "Tc": 126.161,
+        "Pc": 3394400.0,
+        "omega": 0.04,
+        "MW": 28.0134,
+        "pseudo": false
+      },
+      {
+        "id": "CO2",
+        "name": "Carbon Dioxide",
+        "Tc": 304.2,
+        "Pc": 7376500.0,
+        "omega": 0.225,
+        "MW": 44.0095,
+        "pseudo": false
+      },
+      {
+        "id": "H2S",
+        "name": "Hydrogen Sulfide",
+        "Tc": 373.2,
+        "Pc": 8936900.0,
+        "omega": 0.1,
+        "MW": 34.0809,
+        "pseudo": false
+      },
+      {
+        "id": "C7+",
+        "name": "C7+ Pseudo-cut",
+        "Tc": 588.89,
+        "Pc": 2776305.0,
+        "omega": 0.42,
+        "MW": 114.4,
+        "pseudo": true
+      },
+      {
+        "id": "C11+",
+        "name": "C11+ Pseudo-cut",
+        "Tc": 679.4,
+        "Pc": 2120732.25,
+        "omega": 0.65,
+        "MW": 166.6,
+        "pseudo": true
+      },
+      {
+        "id": "C15+",
+        "name": "C15+ Pseudo-cut",
+        "Tc": 760.2,
+        "Pc": 1663756.5000000002,
+        "omega": 0.85,
+        "MW": 230.1,
+        "pseudo": true
+      },
+      {
+        "id": "C20+",
+        "name": "C20+ Pseudo-cut",
+        "Tc": 896.78,
+        "Pc": 1041620.9999999999,
+        "omega": 1.25,
+        "MW": 409.2,
+        "pseudo": true
+      }
+    ],
+    "interactions": {
+      "C1|NC4": 0
+    },
+    "composition": [
+      {
+        "component": "C1",
+        "fraction": 0.5
+      },
+      {
+        "component": "NC4",
+        "fraction": 0.5
+      }
+    ],
+    "model": "PR",
+    "conditions": {
+      "temperature": 129.44,
+      "pressure": 3450,
+      "separatorTemperature": 25,
+      "separatorPressure": 100,
+      "tankTemperature": 15.56,
+      "tankPressure": 14.7,
+      "standardTemperature": 15.56,
+      "standardPressure": 14.7,
+      "minPressure": 100,
+      "maxPressure": 6000,
+      "points": 12
+    }
+  },
+  "lab": [
+    {
+      "pressure": 2000.0,
+      "temperature": 25.0,
+      "density": 461.62300578840154
+    },
+    {
+      "pressure": 2500.0,
+      "temperature": 25.0,
+      "density": 476.88750833639136
+    },
+    {
+      "pressure": 3000.0,
+      "temperature": 25.0,
+      "density": 489.5956045339433
+    },
+    {
+      "pressure": 3500.0,
+      "temperature": 25.0,
+      "density": 500.4904502628797
+    },
+    {
+      "pressure": 4000.0,
+      "temperature": 25.0,
+      "density": 510.02504660671826
+    }
+  ],
+  "production": [],
+  "productionUnit": "bbl/day",
+  "synthetic": false,
+  "labSynthetic": true
+}
