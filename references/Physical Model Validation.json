@@ -1,0 +1,499 @@
+[
+  {
+    "id": "nacl",
+    "fit": null,
+    "metrics": [
+      {
+        "role": "reference",
+        "property": "density",
+        "n": 8,
+        "rmse": 0.0931173390202941,
+        "maxAbsoluteError": 0.1754267737594546
+      },
+      {
+        "role": "reference",
+        "property": "viscosity",
+        "n": 8,
+        "rmse": 2.6958675502930703e-05,
+        "maxAbsoluteError": 4.930353429122292e-05
+      }
+    ],
+    "checks": [
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.8829,
+        "role": "reference",
+        "predicted": 0.8828921310485759,
+        "error": -7.868951424128134e-06
+      },
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 1012.3839009287925,
+        "role": "reference",
+        "predicted": 1012.3732585899385,
+        "error": -0.010642338854040645
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.5533,
+        "role": "reference",
+        "predicted": 0.5532993939615886,
+        "error": -6.060384114547901e-07
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 1002.9001268805512,
+        "role": "reference",
+        "predicted": 1002.8099325005095,
+        "error": -0.09019438004168023
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.2909,
+        "role": "reference",
+        "predicted": 0.29093627254662513,
+        "error": 3.62725466251379e-05
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 973.8868429862737,
+        "role": "reference",
+        "predicted": 973.9816688434972,
+        "error": 0.09482585722355452
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.1907,
+        "role": "reference",
+        "predicted": 0.19067769668223872,
+        "error": -2.2303317761290797e-05
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 935.2623835213341,
+        "role": "reference",
+        "predicted": 935.1655522022111,
+        "error": -0.09683131912299814
+      },
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 1.7748,
+        "role": "reference",
+        "predicted": 1.7747739157863496,
+        "error": -2.6084213650356958e-05
+      },
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1205.9523000611537,
+        "role": "reference",
+        "predicted": 1205.9279027337907,
+        "error": -0.024397327362976284
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 1.1052,
+        "role": "reference",
+        "predicted": 1.1052493035342912,
+        "error": 4.930353429122292e-05
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1191.3334051956451,
+        "role": "reference",
+        "predicted": 1191.3980360787257,
+        "error": 0.06463088308055376
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 0.5811,
+        "role": "reference",
+        "predicted": 0.5810921660211361,
+        "error": -7.833978863835966e-06
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1161.2709832134292,
+        "role": "reference",
+        "predicted": 1161.18611128698,
+        "error": -0.08487192644929564
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 0.3799,
+        "role": "reference",
+        "predicted": 0.3799276792748798,
+        "error": 2.7679274879788274e-05
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1130.9913664781186,
+        "role": "reference",
+        "predicted": 1131.166793251878,
+        "error": 0.1754267737594546
+      }
+    ],
+    "onset": null
+  },
+  {
+    "id": "nC40",
+    "fit": {
+      "converged": true,
+      "rank": 1,
+      "parameterCount": 1,
+      "condition": 1.0,
+      "boundHits": [],
+      "eligible": true,
+      "parameters": {
+        "enthalpyScale": 1.0306925017247401
+      },
+      "objective": "Temperature residual \u00b0C"
+    },
+    "metrics": [
+      {
+        "role": "training",
+        "property": "wax",
+        "n": 5,
+        "rmse": 0.34047122619771575,
+        "maxAbsoluteError": 0.6026163647055469
+      },
+      {
+        "role": "validation",
+        "property": "wax",
+        "n": 2,
+        "rmse": 0.18844355381982283,
+        "maxAbsoluteError": 0.262698331119843
+      }
+    ],
+    "checks": [
+      {
+        "massFraction": 0.049699999999999994,
+        "pressure": 0.1,
+        "measured": 43.52,
+        "role": "training",
+        "predicted": 44.12261636470555,
+        "error": 0.6026163647055469
+      },
+      {
+        "massFraction": 0.0753,
+        "pressure": 0.1,
+        "measured": 47.01,
+        "role": "validation",
+        "predicted": 47.27269833111984,
+        "error": 0.262698331119843
+      },
+      {
+        "massFraction": 0.1008,
+        "pressure": 0.1,
+        "measured": 49.57,
+        "role": "training",
+        "predicted": 49.57343885442225,
+        "error": 0.003438854422249449
+      },
+      {
+        "massFraction": 0.12560000000000002,
+        "pressure": 0.1,
+        "measured": 51.58,
+        "role": "training",
+        "predicted": 51.371119804072976,
+        "error": -0.20888019592702278
+      },
+      {
+        "massFraction": 0.1545,
+        "pressure": 0.1,
+        "measured": 53.08,
+        "role": "validation",
+        "predicted": 53.12485011459671,
+        "error": 0.04485011459671284
+      },
+      {
+        "massFraction": 0.17629999999999998,
+        "pressure": 0.1,
+        "measured": 54.59,
+        "role": "training",
+        "predicted": 54.280078515317825,
+        "error": -0.30992148468217806
+      },
+      {
+        "massFraction": 0.1984,
+        "pressure": 0.1,
+        "measured": 55.62,
+        "role": "training",
+        "predicted": 55.3429391624677,
+        "error": -0.2770608375322965
+      }
+    ],
+    "onset": 49.50941057059458
+  },
+  {
+    "id": "nC50",
+    "fit": {
+      "converged": true,
+      "rank": 1,
+      "parameterCount": 1,
+      "condition": 1.0,
+      "boundHits": [],
+      "eligible": true,
+      "parameters": {
+        "enthalpyScale": 1.0120960953055151
+      },
+      "objective": "Temperature residual \u00b0C"
+    },
+    "metrics": [
+      {
+        "role": "training",
+        "property": "wax",
+        "n": 5,
+        "rmse": 0.2783238014794884,
+        "maxAbsoluteError": 0.367739751352417
+      },
+      {
+        "role": "validation",
+        "property": "wax",
+        "n": 2,
+        "rmse": 0.4029935583070344,
+        "maxAbsoluteError": 0.4730070620507334
+      }
+    ],
+    "checks": [
+      {
+        "massFraction": 0.049100000000000005,
+        "pressure": 0.1,
+        "measured": 57.52,
+        "role": "training",
+        "predicted": 57.85133468545433,
+        "error": 0.33133468545432976
+      },
+      {
+        "massFraction": 0.0751,
+        "pressure": 0.1,
+        "measured": 60.24,
+        "role": "validation",
+        "predicted": 60.713007062050735,
+        "error": 0.4730070620507334
+      },
+      {
+        "massFraction": 0.09970000000000001,
+        "pressure": 0.1,
+        "measured": 62.79,
+        "role": "training",
+        "predicted": 62.694942275879214,
+        "error": -0.09505772412078528
+      },
+      {
+        "massFraction": 0.12480000000000001,
+        "pressure": 0.1,
+        "measured": 64.06,
+        "role": "training",
+        "predicted": 64.32015803762351,
+        "error": 0.260158037623512
+      },
+      {
+        "massFraction": 0.1533,
+        "pressure": 0.1,
+        "measured": 66.18,
+        "role": "validation",
+        "predicted": 65.86208187323768,
+        "error": -0.3179181267623221
+      },
+      {
+        "massFraction": 0.1778,
+        "pressure": 0.1,
+        "measured": 67.38,
+        "role": "training",
+        "predicted": 67.01226024864758,
+        "error": -0.367739751352417
+      },
+      {
+        "massFraction": 0.19879999999999998,
+        "pressure": 0.1,
+        "measured": 68.16,
+        "role": "training",
+        "predicted": 67.90389978839335,
+        "error": -0.2561002116066504
+      }
+    ],
+    "onset": 62.71634167345121
+  },
+  {
+    "id": "cimino",
+    "fit": {
+      "converged": true,
+      "rank": 2,
+      "parameterCount": 2,
+      "condition": 55.55682956145995,
+      "boundHits": [],
+      "eligible": true,
+      "parameters": {
+        "delta": 21.60129928228042,
+        "volume": 0.0021018888185148363
+      },
+      "objective": "Log saturation equality"
+    },
+    "metrics": [
+      {
+        "role": "training",
+        "property": "asphaltene",
+        "n": 9,
+        "rmse": 0.030445640354973543,
+        "maxAbsoluteError": 0.06667344415011228
+      },
+      {
+        "role": "validation",
+        "property": "asphaltene",
+        "n": 3,
+        "rmse": 0.023393497733747756,
+        "maxAbsoluteError": 0.029503379768833493
+      }
+    ],
+    "checks": [
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.013,
+        "measured": 0.293,
+        "role": "training",
+        "predicted": 0.25206520550943795,
+        "error": -0.04093479449056203
+      },
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.01,
+        "measured": 0.294,
+        "role": "validation",
+        "predicted": 0.2644966202311665,
+        "error": -0.029503379768833493
+      },
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.007,
+        "measured": 0.297,
+        "role": "training",
+        "predicted": 0.280871400324108,
+        "error": -0.016128599675891975
+      },
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.003,
+        "measured": 0.294,
+        "role": "training",
+        "predicted": 0.318617374899075,
+        "error": 0.024617374899075006
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.012,
+        "measured": 0.352,
+        "role": "training",
+        "predicted": 0.31711094233641723,
+        "error": -0.034889057663582745
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.009,
+        "measured": 0.354,
+        "role": "validation",
+        "predicted": 0.3339407621727037,
+        "error": -0.020059237827296295
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.006,
+        "measured": 0.355,
+        "role": "training",
+        "predicted": 0.3571281457605113,
+        "error": 0.002128145760511291
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.003,
+        "measured": 0.389,
+        "role": "training",
+        "predicted": 0.39227399515837774,
+        "error": 0.0032739951583777294
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.012,
+        "measured": 0.366,
+        "role": "training",
+        "predicted": 0.36515812828183897,
+        "error": -0.0008418717181610247
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.008,
+        "measured": 0.407,
+        "role": "validation",
+        "predicted": 0.38779206495584345,
+        "error": -0.01920793504415652
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.005,
+        "measured": 0.407,
+        "role": "training",
+        "predicted": 0.4180488722977667,
+        "error": 0.011048872297766743
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.002,
+        "measured": 0.407,
+        "role": "training",
+        "predicted": 0.47367344415011226,
+        "error": 0.06667344415011228
+      }
+    ],
+    "onset": {
+      "precipitantMassFraction": 0.3124876140534872,
+      "status": "Onset found"
+    }
+  }
+]
