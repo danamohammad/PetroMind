@@ -7,7 +7,7 @@ const pause=(ms,signal)=>new Promise((resolve,reject)=>{const abort=()=>{clearTi
 export async function runHosted(task,data,{signal,onProgress=()=>{}}={}){
  let id,complete=false;const deadline=Date.now()+540000;
  try{
-  onProgress('Connecting to the hosted solver… The free server may take a minute to wake.');
+  onProgress('Connecting to Cloudflare… Loading the hosted solver may take a minute.');
   // Let submission finish so a cancellation can delete the actual server job.
   const created=await jsonResponse(await fetch('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,task}),signal:AbortSignal.timeout(120000)}));id=created.id;
   if(!/^[A-Za-z0-9_-]{32,64}$/.test(id))throw Error('Invalid server job response');

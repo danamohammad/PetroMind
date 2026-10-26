@@ -49,7 +49,7 @@ async function callEngine(task,data){
  if(pending)throw Error('A calculation is already running. Cancel it or wait for it to finish.');
  const controller=new AbortController();pending=controller;busy(true);$('globalError').classList.add('hidden');
  try{const result=await runHosted(task,data,{signal:controller.signal,onProgress:message=>{$('hostedMessage').textContent=message;$('engineStatus').textContent=message;$('tuningStatus').textContent=message}});$('engineStatus').textContent='Hosted calculation complete · no local model runtime.';return result}
- catch(e){$('engineStatus').textContent=controller.signal.aborted?'Cancellation finished.':'Hosted calculation failed. Review the error and retry.';throw e.name==='AbortError'?Error('Calculation cancelled on the server.'):e}
+ catch(e){$('engineStatus').textContent=controller.signal.aborted?'Results cancelled. An in-flight request may finish within the server limit.':'Hosted calculation failed. Review the error and retry.';throw e.name==='AbortError'?Error('Results cancelled. Any in-flight server calculation is bounded by Cloudflare limits.'):e}
  finally{if(pending===controller)pending=null;busy(false)}
 }
 $('cancel').onclick=()=>{if(pending){$('engineStatus').textContent='Cancelling the server job…';pending.abort()}};
