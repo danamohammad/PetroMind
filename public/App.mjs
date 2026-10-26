@@ -1,3 +1,4 @@
+import {initializePhysicalModels} from './Physical Model Workbench.mjs';
 import {initializeFlowAssurance} from './Flow Assurance Workbench.mjs';
 import {initializeExperiments} from './Experiment Workbench.mjs';
 import {numeric,analyseProduction,csvText,canonical,parseCSV} from './Data Tools.mjs';
@@ -113,3 +114,4 @@ experimentUI=initializeExperiments({$,esc,fmt,table,plot,line,csv,error,callEngi
 try{const response=await fetch('Fluid Catalog.json');if(!response.ok)throw Error('Could not load fluid catalog.');original=await response.json();catalog=clone(original.catalog);interactions=clone(original.interactions);composition=clone(original.sample);renderComposition();renderLab();renderProduction()}catch(e){error(e);$('calculate').disabled=true}
 
 initializeFlowAssurance({download,csv,error,toast});
+initializePhysicalModels({callEngine,download,csv,error,toast});

@@ -11,6 +11,9 @@ async function boot() {
   const source=await fetch('Fluid Engine.py').then(r=>{if(!r.ok)throw Error('Engine download failed');return r.text()});
   py.globals.set('progress_callback', progress);
   py.runPython(source);
+  const physical=await fetch('Physical Models.py').then(r=>{if(!r.ok)throw Error('Physical model download failed');return r.text()});
+  py.globals.set('physical_source',physical);
+  py.runPython("physical_namespace={}\nexec(physical_source,physical_namespace)\nphysical_dispatch=physical_namespace['physical_dispatch']");
   return py;
 }
 onmessage = async ({data}) => {

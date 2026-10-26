@@ -46,3 +46,14 @@ main input,main select,main textarea{font-size:16px;line-height:1.5;color:#000;f
 
 /* Evidence studies keep units and measurement roles readable. */
 #page-flow .metric-grid{grid-template-columns:repeat(3,minmax(0,1fr))}#page-flow .wide-label{display:block;margin:18px 0}#page-flow .wide-label input{margin-top:8px}#flowRows input{min-width:135px}#flowRows select{min-width:150px}#page-flow .field-grid{align-items:end}#flowSource p{line-height:1.65;overflow-wrap:anywhere}#page-flow .actions-row{flex-wrap:wrap}#flowOrigin{font-size:16px}#page-flow .panel{margin-bottom:24px}@media(max-width:800px){#page-flow .metric-grid{grid-template-columns:1fr}#page-flow .field-grid{grid-template-columns:1fr}}
+
+/* Physical-model forms remain readable at desktop and mobile widths. */
+#page-physical input,#page-physical select,#page-physical textarea{font-size:17px;font-weight:700;color:#000;background:#fff}
+#page-physical label,#page-physical th,#page-physical td,#page-physical p,#page-physical summary{color:#000;font-weight:700}
+#page-physical label{font-size:17px}#page-physical textarea{width:100%;padding:12px;border:1px solid #a8bbc9;border-radius:8px}
+#page-physical .panel{margin-bottom:22px}#page-physical .field-grid{gap:20px;margin:18px 0}
+#page-physical td input{min-width:115px;width:100%}#page-physical td input[type=checkbox]{min-width:24px;width:24px;height:24px}
+#page-physical th{white-space:normal;min-width:120px}#page-physical .chart{height:470px}
+#page-physical pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;color:#000;font-weight:700}
+#physicalJson{font-family:monospace}#physicalStatus{padding:12px;background:#e8f6fc;border-left:4px solid #007fa8}
+@media(max-width:680px){.sidebar nav{gap:1px}.nav{width:32px}.brand img{width:26px}#page-physical .field-grid{grid-template-columns:1fr}#page-physical .metric-grid{grid-template-columns:1fr}#page-physical .chart{height:420px}}

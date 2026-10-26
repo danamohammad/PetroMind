@@ -9,7 +9,7 @@ from thermo import ChemicalConstantsPackage, PropertyCorrelationsPackage, CEOSGa
 PSI = 6894.757293168
 SCF = 35.3146667215
 STB = 6.2898107704
-VERSION = '1.2.0'
+VERSION = '1.4.0'
 
 # Preserve the requested V-L EOS branches. Thermo's default PIP post-sort can
 # relabel a dense vapor branch as a second liquid without changing equilibrium.
@@ -525,6 +525,7 @@ def read_file(req):
 def dispatch_json(text):
     req=json.loads(text); task=req.get('task')
     fun={'calculate':calculate,'envelope':envelope,'compare':comparison,'tune':tune,'import':read_file,'experiments':experiment_comparison}.get(task)
+    if task=='physical':fun=globals().get('physical_dispatch')
     if fun is None:raise ValueError('Unknown calculation request.')
     return json.dumps(clean(fun(req)),allow_nan=False)
 

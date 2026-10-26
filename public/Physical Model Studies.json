@@ -1,0 +1,425 @@
+[
+  {
+    "id": "nacl",
+    "name": "NaCl brine \u00b7 published correlation",
+    "kind": "brine",
+    "sample": "Aqueous sodium chloride reference system",
+    "source": "Kestin, Khalifa & Correia (1981), doi:10.1063/1.555641, Tables 1, 13, 14 and 26. Published correlations fitted to laboratory data; these tabulated checks are correlation outputs, not independent validation.",
+    "sourceUrl": "https://srd.nist.gov/jpcrdreprint/1.555641.pdf",
+    "scope": "NaCl + water only; 20\u2013150 \u00b0C, 0.1\u201335 MPa, 0\u20136 mol/kg water. Gas-free liquid. Bw reference: 20 \u00b0C and 0.1 MPa. No dissolved gas, mixed salts or salt precipitation.",
+    "parameters": {
+      "densityScale": 1.0,
+      "viscosityScale": 1.0
+    },
+    "conditions": {
+      "temperature": 80,
+      "pressure": 20,
+      "molality": 2
+    },
+    "sweep": {
+      "min": 0.5,
+      "max": 35,
+      "points": 41
+    },
+    "observations": [
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.8829,
+        "role": "reference"
+      },
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 1012.3839009287925,
+        "role": "reference"
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.5533,
+        "role": "reference"
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 1002.9001268805512,
+        "role": "reference"
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.2909,
+        "role": "reference"
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 973.8868429862737,
+        "role": "reference"
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 0,
+        "property": "viscosity",
+        "measured": 0.1907,
+        "role": "reference"
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 0,
+        "property": "density",
+        "measured": 935.2623835213341,
+        "role": "reference"
+      },
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 1.7748,
+        "role": "reference"
+      },
+      {
+        "temperature": 25,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1205.9523000611537,
+        "role": "reference"
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 1.1052,
+        "role": "reference"
+      },
+      {
+        "temperature": 50,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1191.3334051956451,
+        "role": "reference"
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 0.5811,
+        "role": "reference"
+      },
+      {
+        "temperature": 100,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1161.2709832134292,
+        "role": "reference"
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 6,
+        "property": "viscosity",
+        "measured": 0.3799,
+        "role": "reference"
+      },
+      {
+        "temperature": 150,
+        "pressure": 35,
+        "molality": 6,
+        "property": "density",
+        "measured": 1130.9913664781186,
+        "role": "reference"
+      }
+    ]
+  },
+  {
+    "id": "nC40",
+    "name": "nC40 in heptane \u00b7 cooling DSC",
+    "kind": "wax",
+    "sample": "nC40 + n-heptane binary laboratory solution",
+    "source": "Zhou et al. (2026), doi:10.3390/pr14081207, Tables 1 and 4. Cooling crystallization measurements. Mole fractions recomputed from reported mass fractions and molecular weights. nC38 and inconsistent nC44 entries excluded.",
+    "sourceUrl": "https://doi.org/10.3390/pr14081207",
+    "scope": "Ideal liquid plus separate pure wax crystals. Cooling data calibrate an effective enthalpy multiplier, not equilibrium melting or deposition kinetics. Binary onset data validate onset only; multicomponent amounts and pressure extrapolation remain predictions. Set deltaV only from measured solid/liquid volumes.",
+    "parameters": {
+      "enthalpyScale": 1.0306925017247401
+    },
+    "components": [
+      {
+        "name": "n-Heptane",
+        "MW": 100.20194,
+        "massFraction": 0.9,
+        "solid": false
+      },
+      {
+        "name": "nC40",
+        "MW": 563.08,
+        "massFraction": 0.1,
+        "solid": true,
+        "Tm": 354.6,
+        "H": 113940,
+        "Htr": 0,
+        "Ttr": 200,
+        "deltaCp": 0,
+        "deltaV": 0
+      }
+    ],
+    "conditions": {
+      "temperature": 40,
+      "pressure": 0.1
+    },
+    "sweep": {
+      "min": 20,
+      "max": 100,
+      "points": 61
+    },
+    "observations": [
+      {
+        "massFraction": 0.0497,
+        "pressure": 0.1,
+        "measured": 43.52,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.0753,
+        "pressure": 0.1,
+        "measured": 47.01,
+        "role": "validation"
+      },
+      {
+        "massFraction": 0.1008,
+        "pressure": 0.1,
+        "measured": 49.57,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.1256,
+        "pressure": 0.1,
+        "measured": 51.58,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.1545,
+        "pressure": 0.1,
+        "measured": 53.08,
+        "role": "validation"
+      },
+      {
+        "massFraction": 0.1763,
+        "pressure": 0.1,
+        "measured": 54.59,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.1984,
+        "pressure": 0.1,
+        "measured": 55.62,
+        "role": "training"
+      }
+    ]
+  },
+  {
+    "id": "nC50",
+    "name": "nC50 in heptane \u00b7 cooling DSC",
+    "kind": "wax",
+    "sample": "nC50 + n-heptane binary laboratory solution",
+    "source": "Zhou et al. (2026), doi:10.3390/pr14081207, Tables 1 and 4. Cooling crystallization measurements. Mole fractions recomputed from reported mass fractions and molecular weights. nC38 and inconsistent nC44 entries excluded.",
+    "sourceUrl": "https://doi.org/10.3390/pr14081207",
+    "scope": "Ideal liquid plus separate pure wax crystals. Cooling data calibrate an effective enthalpy multiplier, not equilibrium melting or deposition kinetics. Binary onset data validate onset only; multicomponent amounts and pressure extrapolation remain predictions. Set deltaV only from measured solid/liquid volumes.",
+    "parameters": {
+      "enthalpyScale": 1.0120960953055151
+    },
+    "components": [
+      {
+        "name": "n-Heptane",
+        "MW": 100.20194,
+        "massFraction": 0.9,
+        "solid": false
+      },
+      {
+        "name": "nC50",
+        "MW": 703.34,
+        "massFraction": 0.1,
+        "solid": true,
+        "Tm": 365.35,
+        "H": 142287,
+        "Htr": 0,
+        "Ttr": 200,
+        "deltaCp": 0,
+        "deltaV": 0
+      }
+    ],
+    "conditions": {
+      "temperature": 40,
+      "pressure": 0.1
+    },
+    "sweep": {
+      "min": 20,
+      "max": 100,
+      "points": 61
+    },
+    "observations": [
+      {
+        "massFraction": 0.0491,
+        "pressure": 0.1,
+        "measured": 57.52,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.0751,
+        "pressure": 0.1,
+        "measured": 60.24,
+        "role": "validation"
+      },
+      {
+        "massFraction": 0.0997,
+        "pressure": 0.1,
+        "measured": 62.79,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.1248,
+        "pressure": 0.1,
+        "measured": 64.06,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.1533,
+        "pressure": 0.1,
+        "measured": 66.18,
+        "role": "validation"
+      },
+      {
+        "massFraction": 0.1778,
+        "pressure": 0.1,
+        "measured": 67.38,
+        "role": "training"
+      },
+      {
+        "massFraction": 0.1988,
+        "pressure": 0.1,
+        "measured": 68.16,
+        "role": "training"
+      }
+    ]
+  },
+  {
+    "id": "cimino",
+    "name": "Asphaltene \u00b7 solvent titration",
+    "kind": "asphaltene",
+    "sample": "Cimino nC7-insoluble asphaltene in toluene + n-alkane",
+    "source": "Cimino et al. (1995), experimental data reproduced in Mohammadi & Richon (2008), doi:10.2174/1874396X00802010082, Table 1, right half. 298.15 K and 0.1 MPa. No ANN predictions used.",
+    "sourceUrl": "https://benthamopen.com/contents/pdf/TOTHERJ/TOTHERJ-2-82.pdf",
+    "scope": "Binary Flory\u2013Huggins common tangent, with a fixed-composition carrier mixture. The rich phase contains solvent. Calibrated to onset in isolated asphaltene solutions at 25 \u00b0C / 0.1 MPa, not reservoir crude. Asphaltene density 1200 kg/m\u00b3 is an assumption; molar volume is effective. Precipitated amounts have no independent yield validation. No resin association, polydispersity, pressure envelope, or deposition kinetics.",
+    "parameters": {
+      "delta": 21.60129928228042,
+      "volume": 0.0021018888185148363,
+      "density": 1200.0
+    },
+    "conditions": {
+      "temperature": 25,
+      "pressure": 0.1,
+      "precipitant": "heptane",
+      "stockAsphaltene": 0.02,
+      "precipitantMassFraction": 0.5
+    },
+    "sweep": {
+      "min": 0,
+      "max": 0.9,
+      "points": 41
+    },
+    "observations": [
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.013,
+        "measured": 0.293,
+        "role": "training"
+      },
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.01,
+        "measured": 0.294,
+        "role": "validation"
+      },
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.007,
+        "measured": 0.297,
+        "role": "training"
+      },
+      {
+        "precipitant": "pentane",
+        "asphalteneMassFraction": 0.003,
+        "measured": 0.294,
+        "role": "training"
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.012,
+        "measured": 0.352,
+        "role": "training"
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.009,
+        "measured": 0.354,
+        "role": "validation"
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.006,
+        "measured": 0.355,
+        "role": "training"
+      },
+      {
+        "precipitant": "heptane",
+        "asphalteneMassFraction": 0.003,
+        "measured": 0.389,
+        "role": "training"
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.012,
+        "measured": 0.366,
+        "role": "training"
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.008,
+        "measured": 0.407,
+        "role": "validation"
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.005,
+        "measured": 0.407,
+        "role": "training"
+      },
+      {
+        "precipitant": "decane",
+        "asphalteneMassFraction": 0.002,
+        "measured": 0.407,
+        "role": "training"
+      }
+    ]
+  }
+]
