@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 8765 --directory public",
-    "test": "python3 \"tests/Engine Tests.py\" && python3 \"tests/Advanced EOS Tests.py\" && python3 \"tests/Experiment Tests.py\" && node \"tests/Data Tests.mjs\" && node \"tests/Flow Assurance Tests.mjs\" && python3 \"tests/Physical Model Tests.py\""
+    "test": "python3 \"tests/Engine Tests.py\" && python3 \"tests/Advanced EOS Tests.py\" && python3 \"tests/Experiment Tests.py\" && node \"tests/Data Tests.mjs\" && node \"tests/Flow Assurance Tests.mjs\" && python3 \"tests/Physical Model Tests.py\" && node \"tests/Project State Tests.mjs\""
   }
 }

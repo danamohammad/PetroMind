@@ -18,7 +18,7 @@ Live site: https://petromind.dana-edu.pp.ua
 
 ## Privacy and persistence
 
-All scientific computation and imported-data processing happen in the visitor's browser. There is no user-data API, database, shared project store or analytics tracker. Saved projects use localStorage and can be lost when browser data is cleared. Download backups. Static hosting and library/font providers receive normal asset requests (including IP address), but no datasets are sent to them by this application.
+All scientific computation and imported-data processing happen in the visitor's browser. There is no user-data API, database, shared project store or analytics tracker. The active project (including its calibration record and edits) is automatically saved in this browser and restored on reload. The supplied demonstration is used only when no active project is available. Named saved projects and the active project use localStorage and can be lost when browser data is cleared. Download backups. Static hosting and library/font providers receive normal asset requests (including IP address), but no datasets are sent to them by this application.
 
 ## Scientific scope
 
@@ -133,3 +133,5 @@ No reference calibration is transferred to Halfaya or Sarta. These modules are p
 Sources: [Kestin et al. (1981)](https://doi.org/10.1063/1.555641); [Zhou et al. (2026)](https://doi.org/10.3390/pr14081207); [Mohammadi & Richon (2008), Table 1, reproducing Cimino measurements](https://benthamopen.com/contents/pdf/TOTHERJ/TOTHERJ-2-82.pdf). Carrier properties use thermo 0.6.1 HEOS fits at 298.15 K. No ANN predictions were used as calibration measurements.
 
 Source corrections: wax mole fractions are recalculated from mass fractions; inconsistent C38 and C44 entries are excluded. The NaCl specific-volume quadratic salt term includes its concentration factor `−0.5 w H(T) p²`, omitted in the printed NIST equation; this reproduces the dynamic/kinematic table ratios for both water and 6 molal brine within rounding. Density checks use those rounded table ratios, not direct density observations.
+
+Project restoration checks: `node "tests/Project State Tests.mjs"` verifies persistence, calibration identity, synthetic labels and stale-fit status. Imports with calibration evidence must match its composition, EOS and final applied parameters. Private project data remains outside the public repository.
