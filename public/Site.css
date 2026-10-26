@@ -43,3 +43,6 @@ main :is(p,label,input,select,textarea,summary,th,td,h1,h2,h3,dt,dd,li,.muted,.c
 
 /* Readable data-entry and laboratory tables at every viewport width. */
 main input,main select,main textarea{font-size:16px;line-height:1.5;color:#000;font-weight:700}main th,main td{font-size:15px}main label,.composition-header,.stage-heading{font-size:15px}#experimentEditor input{min-width:120px}#experimentEditor select{min-width:130px}
+
+/* Evidence studies keep units and measurement roles readable. */
+#page-flow .metric-grid{grid-template-columns:repeat(3,minmax(0,1fr))}#page-flow .wide-label{display:block;margin:18px 0}#page-flow .wide-label input{margin-top:8px}#flowRows input{min-width:135px}#flowRows select{min-width:150px}#page-flow .field-grid{align-items:end}#flowSource p{line-height:1.65;overflow-wrap:anywhere}#page-flow .actions-row{flex-wrap:wrap}#flowOrigin{font-size:16px}#page-flow .panel{margin-bottom:24px}@media(max-width:800px){#page-flow .metric-grid{grid-template-columns:1fr}#page-flow .field-grid{grid-template-columns:1fr}}

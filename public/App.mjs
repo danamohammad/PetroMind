@@ -1,3 +1,4 @@
+import {initializeFlowAssurance} from './Flow Assurance Workbench.mjs';
 import {initializeExperiments} from './Experiment Workbench.mjs';
 import {numeric,analyseProduction,csvText,canonical,parseCSV} from './Data Tools.mjs';
 const $=id=>document.getElementById(id), clone=x=>structuredClone(x), esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -110,3 +111,5 @@ $('tuningDemo').onclick=async()=>{try{const response=await fetch('Tuning Example
 
 experimentUI=initializeExperiments({$,esc,fmt,table,plot,line,csv,error,callEngine,current,download,get:()=>experiments,set:v=>{experiments=v},changed:()=>invalidateFit()});experimentUI.render();
 try{const response=await fetch('Fluid Catalog.json');if(!response.ok)throw Error('Could not load fluid catalog.');original=await response.json();catalog=clone(original.catalog);interactions=clone(original.interactions);composition=clone(original.sample);renderComposition();renderLab();renderProduction()}catch(e){error(e);$('calculate').disabled=true}
+
+initializeFlowAssurance({download,csv,error,toast});

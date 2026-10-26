@@ -4245,3 +4245,17 @@ THE SOFTWARE.
 Pyodide: Mozilla Public License 2.0. Runtime and package licenses: https://github.com/pyodide/pyodide/blob/0.29.0/LICENSE
 Openpyxl: MIT, https://openpyxl.readthedocs.io/en/stable/
 Google Fonts: DM Sans and Manrope are distributed under the SIL Open Font License.
+
+
+Published flow-assurance experimental facts
+Tai, M.; de Oliveira, R. C. G.; Carvalho, É. A.; de Carvalho, T. L.; Lora, E. E. S.
+Experimental Determination of Wax Appearance Temperature (WAT) in Brazilian Presalt Petroleum via HPμDSC: Effects of Pressure and Gas Composition.
+ACS Omega 2026, 11(4), 5051–5062. https://doi.org/10.1021/acsomega.5c06286
+Article license: Creative Commons Attribution 4.0 International, https://creativecommons.org/licenses/by/4.0/
+Adaptation: numerical means and SD from Table 5, first event, NG and N2 only; K converted to °C. PetroMind assigns held-out roles and fits its own empirical trends. No endorsement by the authors is implied.
+
+Ali, A. A.; Al-Jawad, M. S.; Ali, A. A.
+Asphaltene Precipitation Modeling of Sadi Formation in Halfaya Iraqi Oil Field.
+Journal of Engineering 2019, 25(8), 113–128. https://doi.org/10.31026/j.eng.2019.08.08
+Article license: Creative Commons Attribution-NonCommercial 4.0, https://creativecommons.org/licenses/by-nc/4.0/
+Factual reference only: named sample, measured upper onset and reservoir conditions from pp. 117 and 122. Temperature converted from °F to °C. No article text, figures, full table or simulated envelope is redistributed; the paper and its figures are not relicensed by PetroMind.
