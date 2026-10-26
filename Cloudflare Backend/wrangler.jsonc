@@ -1,0 +1,43 @@
+{
+  "name": "petromind-science",
+  "main": "Source/Scientific Worker.py",
+  "account_id": "6cb58274ee47901292250c43193fbc68",
+  "compatibility_date": "2026-10-25",
+  "compatibility_flags": [
+    "python_workers"
+  ],
+  "workers_dev": false,
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SOLVER",
+        "class_name": "ScientificSolver"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "ScientificSolver"
+      ]
+    }
+  ],
+  "python_modules": {
+    "exclude": [
+      "**/*.pyc",
+      "**/*.pyi",
+      "pandas/**",
+      "pandas-*.dist-info/**",
+      "tzdata/**",
+      "chemicals/**/*.tsv",
+      "chemicals/**/*.csv",
+      "chemicals/**/*.json",
+      "chemicals/**/*.xml",
+      "thermo/**/*.tsv",
+      "thermo/**/*.json",
+      "thermo/**/*.sqlite"
+    ]
+  },
+  "preview_urls": false
+}

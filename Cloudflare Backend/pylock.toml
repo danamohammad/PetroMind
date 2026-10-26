@@ -1,0 +1,66 @@
+lock-version = "1.0"
+created-by = "uv"
+requires-python = ">=3.14.2"
+
+[[packages]]
+name = "chemicals"
+version = "1.5.2"
+wheels = [{ url = "https://files.pythonhosted.org/packages/22/f5/59eea489c5faf02e651744057bb93d89aacf6c3c3f404abbc4217b7ceae1/chemicals-1.5.2-py3-none-any.whl", upload-time = 2026-06-07T23:25:05Z, size = 22288884, hashes = { sha256 = "f85ef7f36e77fee634686c26562929ee61026cd548d89cebd57b2251ca843d6e" } }]
+
+[[packages]]
+name = "et-xmlfile"
+version = "2.0.0"
+wheels = [{ url = "https://files.pythonhosted.org/packages/c1/8b/5fe2cc11fee489817272089c4203e679c63b570a5aaeb18d852ae3cbba6a/et_xmlfile-2.0.0-py3-none-any.whl", upload-time = 2024-10-25T17:25:39Z, size = 18059, hashes = { sha256 = "7a91720bc756843502c3b7504c77b8fe44217c85c537d85037f0f536151b2caa" } }]
+
+[[packages]]
+name = "fluids"
+version = "1.3.1"
+wheels = [{ url = "https://files.pythonhosted.org/packages/ee/d3/40646ac276d7d06abd4e8a796efcb44e9cb1fc0b66aaed54be5d4675fc6d/fluids-1.3.1-py3-none-any.whl", upload-time = 2026-06-23T05:27:49Z, size = 608795, hashes = { sha256 = "d9097efe57c910ac14b89a1984d5e7062ee9df1afc84e089d944fdd85404e361" } }]
+
+[[packages]]
+name = "numpy"
+version = "2.4.6"
+wheels = [{ url = "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl", hashes = { sha256 = "a292c1f5d7d8a2208cd5e94fc467604c131cabcd2fc14fed6eefde121e7fabdf" } }]
+
+[[packages]]
+name = "openpyxl"
+version = "3.1.5"
+wheels = [{ url = "https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl", upload-time = 2024-06-28T14:03:41Z, size = 250910, hashes = { sha256 = "5282c12b107bffeef825f4617dc029afaf41d0ea60823bbb665ef3079dc79de2" } }]
+
+[[packages]]
+name = "pandas"
+version = "3.0.2"
+wheels = [{ url = "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pandas-3.0.2-cp314-cp314-pyemscripten_2026_0_wasm32.whl", hashes = { sha256 = "45ff57772cc2f366a8582c7d3097cc4e6676342ecd5a3c08184a43462d5a02ae" } }]
+
+[[packages]]
+name = "python-dateutil"
+version = "3.0.0"
+wheels = [{ url = "https://files.pythonhosted.org/packages/5a/17/cebee01d1c0c1441174cf0456ddc91b280d79acb65340c05e41d77866ee8/python_dateutil-3.0.0-py2.py3-none-any.whl", upload-time = 2026-10-21T23:41:43Z, size = 94659, hashes = { sha256 = "3c79630202e4152c6add678446984236efe4f57e84d8e892aab0637bab82e9fd" } }]
+
+[[packages]]
+name = "scipy"
+version = "1.18.0"
+wheels = [{ url = "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/scipy-1.18.0-cp314-cp314-pyemscripten_2026_0_wasm32.whl", hashes = { sha256 = "17ee329a957863516d1bb6a6aaa0c60576fac027e9cd3d43de27f58b5b599b50" } }]
+
+[[packages]]
+name = "six"
+version = "1.17.0"
+wheels = [
+    { url = "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/six-1.17.0-py2.py3-none-any.whl", hashes = { sha256 = "228c50f73aa7addf2c2ccf2979c256802a59ab69cad8152b31b9443cc8140f42" } },
+    { url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl", hashes = { sha256 = "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274" } },
+]
+
+[[packages]]
+name = "thermo"
+version = "0.6.1"
+wheels = [{ url = "https://files.pythonhosted.org/packages/16/e2/64dae8ca4cd2318a49428222646618318def328d2ebe7d64d77aeb12be26/thermo-0.6.1-py3-none-any.whl", upload-time = 2026-07-13T02:22:38Z, size = 6399201, hashes = { sha256 = "0c16937885feddcb0d4d1589b4ebdef22c186302a83fbac7ed51fc252a451048" } }]
+
+[[packages]]
+name = "tzdata"
+version = "2026.5"
+wheels = [{ url = "https://files.pythonhosted.org/packages/94/21/1e5995a1c920cce14e4bffae20c665ec10e7ed03ab25e006cd741092b718/tzdata-2026.5-py2.py3-none-any.whl", upload-time = 2026-10-03T09:23:12Z, size = 347996, hashes = { sha256 = "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac" } }]
+
+[[packages]]
+name = "workers-runtime-sdk"
+version = "1.9.5"
+wheels = [{ url = "https://files.pythonhosted.org/packages/ad/33/1154f8d518becf3ca3dea57627dea7a84888937cf7b313e6dc4e6f7c7fdf/workers_runtime_sdk-1.9.5-py3-none-any.whl", upload-time = 2026-10-20T07:54:21Z, size = 41297, hashes = { sha256 = "f2b912660a3ab60d2a24920106422f9eaf4cd7a794e42b022237ad2444287fef" } }]
