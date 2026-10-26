@@ -1,0 +1,195 @@
+{
+  "version": "1.3.0",
+  "date": "2026-10-26",
+  "wax": [
+    {
+      "case": "Wax · Brazilian presalt / natural gas",
+      "source": {
+        "title": "Tai et al. (2026), ACS Omega 11, 5051–5062, Table 5",
+        "url": "https://doi.org/10.1021/acsomega.5c06286",
+        "license": "CC BY 4.0",
+        "method": "HPμDSC, cooling at 0.8 K/min; first crystallization event. Means and sample standard deviations from triplicates. Pressure is gauge, as specified in the experimental procedure."
+      },
+      "intercept": 54.95125264552143,
+      "slope": -0.19757347029013003,
+      "domain": [
+        0.1,
+        20
+      ],
+      "training": {
+        "count": 6,
+        "rmse": 0.2571408081071548,
+        "maxError": 0.3714952984924125
+      },
+      "validation": {
+        "count": 2,
+        "rmse": 0.24206842061818698,
+        "maxError": 0.3415842668947988
+      },
+      "comparisons": [
+        {
+          "x": 0.1,
+          "y": 54.56,
+          "sd": 0.96,
+          "role": "training",
+          "predicted": 54.931495298492415,
+          "error": 0.3714952984924125
+        },
+        {
+          "x": 2.5,
+          "y": 54.48,
+          "sd": 0.46,
+          "role": "validation",
+          "predicted": 54.457318969796106,
+          "error": -0.02268103020389134
+        },
+        {
+          "x": 5,
+          "y": 54.08,
+          "sd": 0.35,
+          "role": "training",
+          "predicted": 53.963385294070775,
+          "error": -0.11661470592922285
+        },
+        {
+          "x": 7.5,
+          "y": 53.1,
+          "sd": 0.74,
+          "role": "training",
+          "predicted": 53.46945161834545,
+          "error": 0.36945161834545104
+        },
+        {
+          "x": 10,
+          "y": 53.07,
+          "sd": 0.45,
+          "role": "training",
+          "predicted": 52.97551794262013,
+          "error": -0.09448205737987081
+        },
+        {
+          "x": 12.5,
+          "y": 52.14,
+          "sd": 0.63,
+          "role": "validation",
+          "predicted": 52.4815842668948,
+          "error": 0.3415842668947988
+        },
+        {
+          "x": 15,
+          "y": 51.7,
+          "sd": 0.76,
+          "role": "training",
+          "predicted": 51.987650591169476,
+          "error": 0.28765059116947356
+        },
+        {
+          "x": 20,
+          "y": 51.13,
+          "sd": 0.91,
+          "role": "training",
+          "predicted": 50.99978323971883,
+          "error": -0.13021676028117213
+        }
+      ]
+    },
+    {
+      "case": "Wax · Brazilian presalt / nitrogen",
+      "source": {
+        "title": "Tai et al. (2026), ACS Omega 11, 5051–5062, Table 5",
+        "url": "https://doi.org/10.1021/acsomega.5c06286",
+        "license": "CC BY 4.0",
+        "method": "HPμDSC, cooling at 0.8 K/min; first crystallization event. Means and sample standard deviations from triplicates. Pressure is gauge, as specified in the experimental procedure."
+      },
+      "intercept": 54.95932899101747,
+      "slope": 0.13626809014925798,
+      "domain": [
+        0.1,
+        20
+      ],
+      "training": {
+        "count": 6,
+        "rmse": 0.10216632678764062,
+        "maxError": 0.1433503432563441
+      },
+      "validation": {
+        "count": 2,
+        "rmse": 0.08135148207407028,
+        "maxError": 0.08268011788319996
+      },
+      "comparisons": [
+        {
+          "x": 0.1,
+          "y": 55.11,
+          "sd": 0.71,
+          "role": "training",
+          "predicted": 54.9729558000324,
+          "error": -0.13704419996759754
+        },
+        {
+          "x": 2.5,
+          "y": 55.38,
+          "sd": 0.69,
+          "role": "validation",
+          "predicted": 55.29999921639062,
+          "error": -0.08000078360938545
+        },
+        {
+          "x": 5,
+          "y": 55.7,
+          "sd": 0.6,
+          "role": "training",
+          "predicted": 55.64066944176376,
+          "error": -0.05933055823624045
+        },
+        {
+          "x": 7.5,
+          "y": 55.93,
+          "sd": 0.47,
+          "role": "training",
+          "predicted": 55.98133966713691,
+          "error": 0.05133966713690796
+        },
+        {
+          "x": 10,
+          "y": 56.26,
+          "sd": 0.48,
+          "role": "training",
+          "predicted": 56.32200989251005,
+          "error": 0.062009892510054954
+        },
+        {
+          "x": 12.5,
+          "y": 56.58,
+          "sd": 0.52,
+          "role": "validation",
+          "predicted": 56.6626801178832,
+          "error": 0.08268011788319996
+        },
+        {
+          "x": 15,
+          "y": 56.86,
+          "sd": 0.56,
+          "role": "training",
+          "predicted": 57.00335034325634,
+          "error": 0.1433503432563441
+        },
+        {
+          "x": 20,
+          "y": 57.8,
+          "sd": 0.47,
+          "role": "training",
+          "predicted": 57.684690794002634,
+          "error": -0.11530920599736305
+        }
+      ]
+    }
+  ],
+  "asphaltene": {
+    "temperature": 86.1,
+    "pressure": 4406.6,
+    "onset": 7015,
+    "margin": -2608.3999999999996,
+    "statement": "Below the measured upper onset. Lower onset and precipitated quantity are unknown."
+  }
+}
