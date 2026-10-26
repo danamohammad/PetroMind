@@ -4261,11 +4261,12 @@ Article license: Creative Commons Attribution-NonCommercial 4.0, https://creativ
 Factual reference only: named sample, measured upper onset and reservoir conditions from pp. 117 and 122. Temperature converted from °F to °C. No article text, figures, full table or simulated envelope is redistributed; the paper and its figures are not relicensed by PetroMind.
 
 
-PetroMind 1.5 optional local AI
-Transformers.js 3.7.2 by Hugging Face, Apache License 2.0.
-https://github.com/huggingface/transformers.js/blob/main/LICENSE
-Qwen2.5-0.5B-Instruct by the Qwen team, ONNX conversion by ONNX Community, Apache License 2.0.
-https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
-https://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct
-Pinned model revision: 22942cb7d7ba4cc81bb4673549ca4d4614469b5e
-These dependencies are downloaded on demand, not redistributed as model weights in this repository. ONNX Runtime Web retains its MIT license: https://github.com/microsoft/onnxruntime/blob/main/LICENSE
+PetroMind 1.6 hosted AI and server
+Qwen3-30B-A3B-FP8 by the Qwen team, Apache License 2.0.
+https://huggingface.co/Qwen/Qwen3-30B-A3B-FP8
+https://developers.cloudflare.com/workers-ai/models/qwen3-30b-a3b-fp8/
+Model weights are hosted by Cloudflare, not redistributed by PetroMind. Browser Transformers.js and ONNX inference were retired in v1.6.
+FastAPI: MIT, https://github.com/fastapi/fastapi/blob/master/LICENSE
+Uvicorn: BSD 3-Clause, https://github.com/encode/uvicorn/blob/master/LICENSE.md
+Node.js: MIT and third-party notices, https://github.com/nodejs/node/blob/main/LICENSE
+Python and numerical-package licenses above continue to apply to the server runtime.

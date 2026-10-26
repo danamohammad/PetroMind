@@ -1,4 +1,4 @@
-"""PetroMind public workbench. Same code runs in CPython and browser Pyodide.
+"""PetroMind public workbench. Scientific calculations execute on the hosted CPython backend.
 No network requests or filesystem persistence of user inputs.
 """
 import json, math, io, base64, csv, hashlib
@@ -9,7 +9,7 @@ from thermo import ChemicalConstantsPackage, PropertyCorrelationsPackage, CEOSGa
 PSI = 6894.757293168
 SCF = 35.3146667215
 STB = 6.2898107704
-VERSION = '1.5.0'
+VERSION = '1.6.0'
 
 # Preserve the requested V-L EOS branches. Thermo's default PIP post-sort can
 # relabel a dense vapor branch as a second liquid without changing equilibrium.
