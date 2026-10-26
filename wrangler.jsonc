@@ -2,6 +2,55 @@
   "name": "petromind",
   "compatibility_date": "2026-10-25",
   "account_id": "6cb58274ee47901292250c43193fbc68",
-  "assets": { "directory": "./public" },
-  "routes": [{"pattern": "petromind.dana-edu.pp.ua", "custom_domain": true}]
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
+  },
+  "routes": [
+    {
+      "pattern": "petromind.dana-edu.pp.ua",
+      "custom_domain": true
+    }
+  ],
+  "main": "Hosted Worker.mjs",
+  "ai": {
+    "binding": "AI"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "USAGE",
+        "class_name": "UsageQuota"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1-hosted",
+      "new_sqlite_classes": [
+        "UsageQuota"
+      ]
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "AI_LIMITER",
+      "namespace_id": "78412601",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
+    },
+    {
+      "name": "API_LIMITER",
+      "namespace_id": "78412602",
+      "simple": {
+        "limit": 120,
+        "period": 60
+      }
+    }
+  ]
 }
