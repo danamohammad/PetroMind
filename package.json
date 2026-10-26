@@ -1,10 +1,10 @@
 {
   "name": "petromind",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 8765 --directory public",
-    "test": "python3 \"tests/Engine Tests.py\" && python3 \"tests/Advanced EOS Tests.py\" && python3 \"tests/Experiment Tests.py\" && node \"tests/Data Tests.mjs\" && node \"tests/Flow Assurance Tests.mjs\" && python3 \"tests/Physical Model Tests.py\" && node \"tests/Project State Tests.mjs\" && python3 \"tests/Engineering Model Tests.py\" && node \"tests/Operations Data Tests.mjs\""
+    "test": "python3 \"tests/Engine Tests.py\" && python3 \"tests/Advanced EOS Tests.py\" && python3 \"tests/Experiment Tests.py\" && node \"tests/Data Tests.mjs\" && node \"tests/Flow Assurance Tests.mjs\" && python3 \"tests/Physical Model Tests.py\" && node \"tests/Project State Tests.mjs\" && python3 \"tests/Engineering Model Tests.py\" && node \"tests/Operations Data Tests.mjs\" && python3 \"tests/Hosted Server Tests.py\" && node --test \"tests/Hosted Worker Tests.mjs\" \"tests/Hosted Client Tests.mjs\""
   }
 }

@@ -9,7 +9,7 @@ Live site: https://petromind.dana-edu.pp.ua
 1. Load the supplied example or import a composition CSV/Excel file. You can edit every mole fraction and component property directly.
 2. Check the composition total. Normalize only when that is appropriate for your data.
 3. Enter reservoir, separator, stock-tank and standard-gas conditions. Fluid-workbench pressures are absolute (psia), temperatures are Celsius. The separate flow-assurance studies retain their source units, including MPag for the wax experiments.
-4. Click **Calculate fluid properties**. The first calculation loads scientific Python and dependencies; subsequent calculations reuse them.
+4. Click **Calculate fluid properties**. Inputs are sent to the hosted scientific server, which may need about a minute to wake after inactivity.
 5. Choose a PVT property, zoom the chart, download PNG, export the calculated CSV, or print to PDF.
 6. Use **Phase behavior → Trace phase envelope**. Adaptive continuation follows bubble and dew branches through turning points. It reports a verified mixture critical point, cricondentherm and cricondenbar. A complete trace must return to the chosen pressure floor on both branches; limits or numerical failures are marked partial.
 7. Use **Laboratory & tuning** to enter or import measured Bo, Rs, Bg, liquid density, bubble pressure or CCE relative volume (total volume / saturated-liquid volume at the same temperature). Compare first, select up to six bounded parameters, then fit. Review the diagnostics before **Apply fitted parameters**. Revert is available, and both fit reports and prediction tables can be exported. The synthetic tuning demo tests recovery of a known interaction; it is not laboratory calibration.
@@ -18,20 +18,20 @@ Live site: https://petromind.dana-edu.pp.ua
 
 ## Privacy and persistence
 
-All scientific computation and imported-data processing happen in the visitor's browser. There is no user-data API, database, shared project store or analytics tracker. The active project (including its calibration record and edits) is automatically saved in this browser and restored on reload. The supplied demonstration is used only when no active project is available. Named saved projects and the active project use localStorage and can be lost when browser data is cleared. Download backups. Static hosting and library/font providers receive normal asset requests (including IP address), but no datasets are sent to them by this application.
+Scientific calculations and predictor training run on the Render server. Calculation inputs are sent through Cloudflare when you calculate; temporary job results are held in server memory and removed after retrieval or expiry. Assistant questions and selected summaries go to Cloudflare Workers AI. No scientific Python runtime or AI weights load in your browser. Forms, charts, CSV editing and project storage remain in the browser; export project backups. Free hosting has shared limits and may take about a minute to wake. No local fallback is used.
 
 ## Scientific scope
 
-Thermo 0.6.1 provides PR, PR78 and SRK vapor–liquid equilibrium. Pyodide 0.29.0 runs the same Python engine in a Web Worker. Plotly draws actual calculated points. Component properties and default PR interactions come from ThermoPack 2.2.3; the original supplied pseudocomponent assumptions are preserved and editable.
+Thermo 0.6.1 provides PR, PR78 and SRK vapor–liquid equilibrium. The Render backend runs the same Python engine in an isolated process. Plotly draws actual calculated points. Component properties and default PR interactions come from ThermoPack 2.2.3; the original supplied pseudocomponent assumptions are preserved and editable.
 
-The supplied example is an uncalibrated research model; each user fluid must be calibrated separately. Agreement with another EOS implementation is numerical verification, not validation against laboratory measurements. Heavy-cut labels must represent non-overlapping fractions. The Brine & solids workspace provides separate NaCl brine properties, ideal multisolid wax equilibrium and binary Flory–Huggins liquid–liquid asphaltene separation. These are not coupled to the hydrocarbon VLE flash. The older Flow assurance workspace retains empirical wax pressure-trend calibration and measured asphaltene-onset comparisons. Component-linear volume translation is available in both phases, with optional linear temperature slopes about 298.15 K. VLE is unchanged; translated volumes must remain positive. This release provides no caloric properties. Bounded local least-squares fitting adjusts selected interactions or pseudocomponent Tc/Pc/acentric factors, volume shifts, temperature slopes or LBC viscosity critical volumes. It uses scaled residuals and equal total weight per property; zero values have explicit scale floors. Rank-deficient or nonconverged fits cannot be applied. Boundary hits are disclosed. Fitting data are not independent validation. No external generative-AI inference service is used. Version 1.5 adds optional local model inference in the browser.
+The supplied example is an uncalibrated research model; each user fluid must be calibrated separately. Agreement with another EOS implementation is numerical verification, not validation against laboratory measurements. Heavy-cut labels must represent non-overlapping fractions. The Brine & solids workspace provides separate NaCl brine properties, ideal multisolid wax equilibrium and binary Flory–Huggins liquid–liquid asphaltene separation. These are not coupled to the hydrocarbon VLE flash. The older Flow assurance workspace retains empirical wax pressure-trend calibration and measured asphaltene-onset comparisons. Component-linear volume translation is available in both phases, with optional linear temperature slopes about 298.15 K. VLE is unchanged; translated volumes must remain positive. This release provides no caloric properties. Bounded local least-squares fitting adjusts selected interactions or pseudocomponent Tc/Pc/acentric factors, volume shifts, temperature slopes or LBC viscosity critical volumes. It uses scaled residuals and equal total weight per property; zero values have explicit scale floors. Rank-deficient or nonconverged fits cannot be applied. Boundary hits are disclosed. Fitting data are not independent validation. The optional assistant uses Cloudflare Workers AI; scientific calculations do not depend on generated text.
 
 Phase-envelope tracing uses log K, log T and log P equilibrium equations with adaptive pseudo-arclength steps and a fixed log-K specification near criticality. Scaled residuals reject trivial solutions. The mixture critical point satisfies a zero minimum stability eigenvalue and zero third derivative along its eigenvector. Maxima are refined separately; they are not used as critical-point guesses. This follows a connected V–L envelope; disconnected branches, LLE and solids are outside scope. Numerical failures retain only converged points. Production forecasts are simple exponential historical baselines with no economic limit, operational constraints or calibrated uncertainty band.
 
 ## Implementation
 
 - `public/Fluid Engine.py`: validated inputs, EOS construction, flash, separator train, PVT sweep, saturation, continuation, mixture criticality, CCE volume and bounded laboratory fitting.
-- `public/Calculation Worker.js`: pinned browser Python runtime and request dispatch.
+- `public/Hosted Client.mjs`: hosted API, polling and cancellation. The old worker files are retirement notices only.
 - `public/App.mjs`: UI, input editing, charts, imports, project storage and export.
 - `public/Data Tools.mjs`: CSV parser, CSV export protection and production analysis.
 - `references/ThermoPack Comparison.json`: independent-engine comparisons for four fluids/states.
@@ -48,7 +48,7 @@ Run from the repository root:
 python3 -m http.server 8765 --directory public
 ```
 
-Open http://localhost:8765. Serve through HTTP; opening index.html as a file will not support module/worker loading.
+Open http://localhost:8765 for a layout-only preview. Calculations require the edge API and scientific backend. See Hosted Deployment.md for deployment and development instructions.
 
 ## Tests
 
@@ -67,7 +67,7 @@ The optional ThermoPack crosscheck script uses the original extracted worker kep
 
 ## Deploy
 
-This is a static Cloudflare Worker Assets application. The checked-in `wrangler.jsonc` targets the owner's PetroMind Worker and custom domain. For your own fork, replace account ID, Worker name and route before deploying.
+Cloudflare Worker Assets serves the interface; the Worker proxies calculations to Render and invokes Workers AI. The checked-in `wrangler.jsonc` targets the owner's PetroMind Worker and custom domain. For your own fork, replace account ID, Worker name and route before deploying.
 
 ```sh
 npx wrangler@4.151.1 login
@@ -143,6 +143,13 @@ Seven additional workspaces cover Core & SCAL, IPR/VLP, decline/tank history mat
 
 Each numerical workspace supports editable CSV, synthetic examples, separate browser saves, study JSON and calculated CSV exports. Core fits require explicit application; stale results cannot be exported. Telemetry supports a labeled simulated feed and read-only HTTPS CORS JSON polling; no field endpoint is configured. Pressure/temperature surveys export measurements and fitted gradients.
 
-The predictor is locally trained standardized ridge regression, with an inner temporal split for alpha and an untouched 20% evaluation period. The local assistant downloads the Apache-2.0 Qwen2.5-0.5B-Instruct model at revision `22942cb7d7ba4cc81bb4673549ca4d4614469b5e` through Transformers.js 3.7.2. It uses CPU/WASM q8 inference and exposes Stop/unload. It receives a user-selected result summary and a short matching PetroMind method reference, which is also shown in the interface. The initial q8 model download is roughly 500 MB. Generated text is separate from numerical outputs and never executes tools.
+The predictor uses standardized ridge regression on the hosted scientific server, with an inner temporal split for alpha and an untouched 20% evaluation period. The assistant runs Qwen3-30B-A3B-FP8 on Cloudflare Workers AI. It receives your question, an optional selected result summary and a matching method reference. No model weights or inference runtime are downloaded to the browser. Generated text never executes tools.
 
-No simulator-grid history match, multiphase VLP correlation, actual sensor integration, operational control or field-wide validation is claimed. Optimization is an explicit constrained single-liquid grid; forecasts are empirical planning scenarios. Source files: `Engineering Models.py`, `Engineering Workbench.mjs`, `Operations Data.mjs`, `Local AI Worker.js`. Tests: `Engineering Model Tests.py` and `Operations Data Tests.mjs`.
+No simulator-grid history match, multiphase VLP correlation, actual sensor integration, operational control or field-wide validation is claimed. Optimization is an explicit constrained single-liquid grid; forecasts are empirical planning scenarios. Source files: `Engineering Models.py`, `Engineering Workbench.mjs`, `Operations Data.mjs`, `Hosted Client.mjs`. Tests: `Engineering Model Tests.py` and `Operations Data Tests.mjs`.
+
+
+## Version 1.6 · hosted computation
+
+Scientific calculations and predictor training run on the Render server. Calculation inputs are sent through Cloudflare when you calculate; temporary job results are held in server memory and removed after retrieval or expiry. Assistant questions and selected summaries go to Cloudflare Workers AI. No scientific Python runtime or AI weights load in your browser. Forms, charts, CSV editing and project storage remain in the browser; export project backups. Free hosting has shared limits and may take about a minute to wake. No local fallback is used.
+
+Deploy the Docker backend on Render Free, then configure the Cloudflare edge proxy. See [Hosted Deployment](Hosted%20Deployment.md). Public limits: 50 assistant requests, 200 scientific jobs and 5,000 telemetry summary/simulation requests per UTC day, shared across visitors. Additional per-address limits reduce bursts; visitors sharing an address share those limits. One scientific job runs at a time, with a seven-minute server timeout. The free service is a public research/demo service, not an always-on production SLA.
