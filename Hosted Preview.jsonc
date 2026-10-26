@@ -1,0 +1,63 @@
+{
+  "name": "petromind-hosted-preview",
+  "compatibility_date": "2026-10-25",
+  "account_id": "6cb58274ee47901292250c43193fbc68",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
+  },
+  "main": "Hosted Worker.mjs",
+  "ai": {
+    "binding": "AI"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "USAGE",
+        "class_name": "UsageQuota"
+      },
+      {
+        "name": "JOBS",
+        "class_name": "ScientificJobs"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1-hosted",
+      "new_sqlite_classes": [
+        "UsageQuota",
+        "ScientificJobs"
+      ]
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "AI_LIMITER",
+      "namespace_id": "78412611",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
+    },
+    {
+      "name": "API_LIMITER",
+      "namespace_id": "78412612",
+      "simple": {
+        "limit": 120,
+        "period": 60
+      }
+    }
+  ],
+  "services": [
+    {
+      "binding": "SCIENTIFIC",
+      "service": "petromind-science"
+    }
+  ],
+  "workers_dev": true,
+  "preview_urls": false
+}

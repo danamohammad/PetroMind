@@ -1,4 +1,5 @@
 import {referenceFor} from './server/Assistant References.mjs';
+export {ScientificJobs} from './server/Cloudflare Jobs.mjs';
 const MODEL='@cf/qwen/qwen3-30b-a3b-fp8';
 const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
 class ApiError extends Error{constructor(message,status){super(message);this.status=status}}
@@ -30,7 +31,7 @@ export default{
   try{
    if(request.headers.get('Origin')&&request.headers.get('Origin')!==url.origin)throw new ApiError('Cross-origin requests are not allowed',403);
    if(request.headers.get('Sec-Fetch-Site')==='cross-site')throw new ApiError('Cross-site requests are not allowed',403);
-   if(path==='/api/status'&&request.method==='GET')return json({version:'1.6.0',execution:'hosted',scientificConfigured:!!(env.BACKEND_URL&&env.BACKEND_KEY),assistantConfigured:!!env.AI,model:MODEL});
+   if(path==='/api/status'&&request.method==='GET')return json({version:'1.6.1',execution:'hosted',scientificConfigured:!!(env.JOBS&&env.SCIENTIFIC)||!!(env.BACKEND_URL&&env.BACKEND_KEY),assistantConfigured:!!env.AI,model:MODEL,provider:env.JOBS?'Cloudflare Workers and Durable Objects':'External scientific backend'});
    const job=/^\/api\/jobs\/[A-Za-z0-9_-]{32,64}$/.test(path);
    if(!((path==='/api/jobs'&&request.method==='POST')||(job&&['GET','DELETE'].includes(request.method))||(['/api/assistant','/api/summary'].includes(path)&&request.method==='POST')))throw new ApiError('API route not found',404);
    const ip=request.headers.get('CF-Connecting-IP')||'unknown';
@@ -48,6 +49,11 @@ export default{
     const answer=typeof raw==='string'?raw.replace(/<think>[\s\S]*?<\/think>/g,'').trim():'';
     if(!answer||answer.includes('<think>'))throw new ApiError('The hosted model did not return a complete answer. Try a shorter question.',502);
     return json({answer,reference,model:'Qwen3-30B-A3B',provider:'Cloudflare Workers AI',execution:'hosted'});
+   }
+   if(env.JOBS&&env.SCIENTIFIC){
+    let payload;
+    if(request.method==='POST'){payload=await body(request,path==='/api/summary'?3000000:8000000);await allowance(env,path==='/api/summary'?'summary':'calculation')}
+    return await env.JOBS.get(env.JOBS.idFromName('public-jobs')).fetch('https://jobs'+path.replace('/api',''),{method:request.method,headers:{'Content-Type':'application/json'},body:payload});
    }
    if(!env.BACKEND_URL||!env.BACKEND_KEY)throw new ApiError('The scientific server is not connected yet. No calculation will run on your device.',503);
    const upstream=new URL(env.BACKEND_URL);if(upstream.protocol!=='https:'&&!env.LOCAL_TEST)throw new ApiError('Invalid server configuration',503);

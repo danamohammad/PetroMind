@@ -24,6 +24,10 @@
       {
         "name": "USAGE",
         "class_name": "UsageQuota"
+      },
+      {
+        "name": "JOBS",
+        "class_name": "ScientificJobs"
       }
     ]
   },
@@ -31,7 +35,8 @@
     {
       "tag": "v1-hosted",
       "new_sqlite_classes": [
-        "UsageQuota"
+        "UsageQuota",
+        "ScientificJobs"
       ]
     }
   ],
@@ -51,6 +56,12 @@
         "limit": 120,
         "period": 60
       }
+    }
+  ],
+  "services": [
+    {
+      "binding": "SCIENTIFIC",
+      "service": "petromind-science"
     }
   ]
 }

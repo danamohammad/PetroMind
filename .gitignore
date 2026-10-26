@@ -6,3 +6,10 @@ __pycache__/
 .env*
 secrets.toml
 .dev.vars*
+.venv/
+.venv-workers/
+python_modules/
+Cloudflare Backend/Source/Fluid Engine.py
+Cloudflare Backend/Source/Physical Models.py
+Cloudflare Backend/Source/Engineering Models.py
+Cloudflare Backend/Source/Import Reader.py
