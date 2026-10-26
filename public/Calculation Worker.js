@@ -14,6 +14,9 @@ async function boot() {
   const physical=await fetch('Physical Models.py').then(r=>{if(!r.ok)throw Error('Physical model download failed');return r.text()});
   py.globals.set('physical_source',physical);
   py.runPython("physical_namespace={}\nexec(physical_source,physical_namespace)\nphysical_dispatch=physical_namespace['physical_dispatch']");
+  const engineering=await fetch('Engineering Models.py').then(r=>{if(!r.ok)throw Error('Engineering model download failed');return r.text()});
+  py.globals.set('engineering_source',engineering);
+  py.runPython("engineering_namespace={}\nexec(engineering_source,engineering_namespace)\nengineering_dispatch=engineering_namespace['engineering_dispatch']");
   return py;
 }
 onmessage = async ({data}) => {

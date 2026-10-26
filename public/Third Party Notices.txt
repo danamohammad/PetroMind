@@ -4259,3 +4259,12 @@ Asphaltene Precipitation Modeling of Sadi Formation in Halfaya Iraqi Oil Field.
 Journal of Engineering 2019, 25(8), 113–128. https://doi.org/10.31026/j.eng.2019.08.08
 Article license: Creative Commons Attribution-NonCommercial 4.0, https://creativecommons.org/licenses/by-nc/4.0/
 Factual reference only: named sample, measured upper onset and reservoir conditions from pp. 117 and 122. Temperature converted from °F to °C. No article text, figures, full table or simulated envelope is redistributed; the paper and its figures are not relicensed by PetroMind.
+
+
+PetroMind 1.5 optional local AI
+Transformers.js 3.7.2 by Hugging Face, Apache License 2.0.
+https://github.com/huggingface/transformers.js/blob/main/LICENSE
+SmolLM2-135M-Instruct by HuggingFaceTB, Apache License 2.0.
+https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct
+Pinned model revision: 12fd25f77366fa6b3b4b768ec3050bf629380bac
+These dependencies are downloaded on demand, not redistributed as model weights in this repository. ONNX Runtime Web retains its MIT license: https://github.com/microsoft/onnxruntime/blob/main/LICENSE

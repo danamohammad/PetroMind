@@ -1,8 +1,10 @@
+import {mountEngineering,initializeEngineering} from './Engineering Workbench.mjs';
 import {evidenceMatches,calibrationMessage,storeActiveProject,readActiveProject} from './Project State.mjs';
 import {initializePhysicalModels} from './Physical Model Workbench.mjs';
 import {initializeFlowAssurance} from './Flow Assurance Workbench.mjs';
 import {initializeExperiments} from './Experiment Workbench.mjs';
 import {numeric,analyseProduction,csvText,canonical,parseCSV} from './Data Tools.mjs';
+mountEngineering();
 const $=id=>document.getElementById(id), clone=x=>structuredClone(x), esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(v,d=3)=>v===null||v===undefined||!Number.isFinite(Number(v))?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:d});
 const conditionsKeys=['temperature','pressure','separatorTemperature','separatorPressure','tankTemperature','tankPressure','standardTemperature','standardPressure','minPressure','maxPressure','points'];
@@ -22,7 +24,7 @@ function error(err){$('globalError').querySelector('span').textContent=String(er
 $('globalError').querySelector('button').onclick=()=>$('globalError').classList.add('hidden');
 function download(name,data,type='text/plain'){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000)}
 const csv=(name,rows)=>download(name,csvText(rows),'text/csv;charset=utf-8');
-function go(page){document.querySelectorAll('.page').forEach(e=>e.classList.toggle('hidden',e.id!==`page-${page}`));document.querySelectorAll('.nav').forEach(e=>e.classList.toggle('active',e.dataset.page===page));$('pageName').textContent=document.querySelector(`[data-page="${page}"]`).textContent.trim().slice(1).trim();if(page==='projects')renderProjects();resizePlots();window.scrollTo({top:0,behavior:'smooth'})}
+function go(page){for(const id of ['saveProject','exportProject'])$(id).classList.toggle('hidden',['core','nodal','history','telemetry','pressure','forecast','learning'].includes(page));document.querySelectorAll('.page').forEach(e=>e.classList.toggle('hidden',e.id!==`page-${page}`));document.querySelectorAll('.nav').forEach(e=>e.classList.toggle('active',e.dataset.page===page));$('pageName').textContent=document.querySelector(`[data-page="${page}"]`).textContent.trim().slice(1).trim();if(page==='projects')renderProjects();resizePlots();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
 function resizePlots(){requestAnimationFrame(()=>document.querySelectorAll('.js-plotly-plot').forEach(e=>{if(e.offsetWidth)Plotly.Plots.resize(e)}))}
 function current(){return {catalog:clone(catalog),interactions:clone(interactions),composition:clone(composition),conditions:Object.fromEntries(conditionsKeys.map(k=>[k,$(k).value])),model:$('model').value,experiments:clone(experiments)}}
@@ -128,3 +130,9 @@ try{const response=await fetch('Fluid Catalog.json');if(!response.ok)throw Error
 
 initializeFlowAssurance({download,csv,error,toast});
 initializePhysicalModels({callEngine,download,csv,error,toast});
+
+initializeEngineering({callEngine,download,csv,error,toast,getPvt:()=>{
+ if(!result||JSON.stringify(current())!==JSON.stringify(resultInput))throw Error('Calculate the current PVT fluid first; stale results cannot be transferred.');
+ if(!result.state.liquid||result.state.vaporFraction>1e-8||!Number.isFinite(result.surface.Bo))throw Error('PVT transfer requires a single-liquid reservoir state and a valid oil volume factor.');
+ return {values:{density:result.state.liquid.density,fvf:result.surface.Bo},source:`Copied from ${$('projectName').value}: ${result.model}, ${result.conditions.temperature} °C, ${result.conditions.pressure} psia. These constant properties are a snapshot; check wellbore applicability and enter viscosity and bubble pressure separately.`};
+}});

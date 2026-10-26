@@ -11,9 +11,10 @@ export function analyseProduction(input){
 }
 export function csvText(rows){if(!rows.length)return '';const columns=[...new Set(rows.flatMap(r=>Object.keys(r)))];const cell=v=>{if(v===null||v===undefined)return '';let s=String(v);if(typeof v==='string'&&/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'};return '\uFEFF'+[columns.map(cell).join(','),...rows.map(r=>columns.map(k=>cell(r[k])).join(','))].join('\r\n')}
 export function canonical(s){return String(s).toLowerCase().replace(/[^a-z0-9]/g,'')}
-export function parseCSV(text){
+export function parseCSV(text,{maxRows=1000}={}){
+ if(!Number.isInteger(maxRows)||maxRows<1||maxRows>10000)throw Error("Invalid CSV row limit.");
  text=text.replace(/^\uFEFF/,'');let rows=[],row=[],v='',quoted=false;
  for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++}else if(!quoted&&v!=='')throw Error('Invalid CSV quotation.');else quoted=!quoted}else if(c===','&&!quoted){row.push(v);v=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(v);if(row.some(x=>x.trim()!==''))rows.push(row);row=[];v=''}else v+=c}
- if(quoted)throw Error('Unclosed CSV quotation.');if(v||row.length){row.push(v);rows.push(row)}if(rows.length<2)throw Error('CSV needs headings and data.');const columns=rows.shift().map(x=>x.trim());if(new Set(columns).size!==columns.length||columns.some(x=>!x))throw Error('CSV headings must be distinct and nonblank.');if(rows.length>1000)throw Error('Use at most 1,000 rows.');return {columns,rows:rows.map((r,i)=>{if(r.length!==columns.length)throw Error(`CSV row ${i+2} has ${r.length} values; expected ${columns.length}.`);return Object.fromEntries(columns.map((c,j)=>[c,r[j]]))})}
+ if(quoted)throw Error('Unclosed CSV quotation.');if(v||row.length){row.push(v);rows.push(row)}if(rows.length<2)throw Error('CSV needs headings and data.');const columns=rows.shift().map(x=>x.trim());if(new Set(columns).size!==columns.length||columns.some(x=>!x))throw Error('CSV headings must be distinct and nonblank.');if(rows.length>maxRows)throw Error(`Use at most ${maxRows.toLocaleString()} rows.`);return {columns,rows:rows.map((r,i)=>{if(r.length!==columns.length)throw Error(`CSV row ${i+2} has ${r.length} values; expected ${columns.length}.`);return Object.fromEntries(columns.map((c,j)=>[c,r[j]]))})}
 
 }
